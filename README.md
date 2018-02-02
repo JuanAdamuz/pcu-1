@@ -66,7 +66,6 @@ Una vez hayas instalado los requisitos, sigue leyendo por aquí.
 #### Descargar los archivos
 
 Descarga los archivos con GIT para que actualizar la PCU sea más fácil.
-Además, recuerda: según la licencia, **debes hacer públicos claramente los cambios que realices al código**, según la licencia que viene con la PCU: la licencia GNU.
 
     git clone https://github.com/Apecengo/pcu.git
     
