@@ -1,0 +1,9 @@
+/* TEAM */
+Developer: Apecengo
+Steam: apecengo
+
+/* SITE */
+Last update: 2017/08
+Standards: HTML5, CSS3
+Components: Materializecss, Vue, jQuery, Moment.js, Clipboard.js
+IDE: PhPStorm
