@@ -11,8 +11,6 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
     public function boot()
     {
@@ -23,13 +21,10 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register()
     {
-
-        if ($this->app->environment() !== 'production') {
+        if ('production' !== $this->app->environment()) {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         }
     }
@@ -39,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $socialite = $this->app->make('Laravel\Socialite\Contracts\Factory');
         $socialite->extend('ipb', function ($app) use ($socialite) {
             $config = $app['config']['services.ipb'];
+
             return $socialite->buildProvider(Provider::class, $config);
         });
     }

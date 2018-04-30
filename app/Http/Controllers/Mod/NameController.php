@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Mod;
 
+use App\Http\Controllers\Controller;
 use App\Name;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class NameController extends Controller
@@ -23,7 +23,7 @@ class NameController extends Controller
         $results = Name::query();
 
         if ($request->has('q')) {
-            $results->orWhere('name', 'LIKE', '%' . $request->input('q') . '%');
+            $results->orWhere('name', 'LIKE', '%'.$request->input('q').'%');
         }
 
         if ($request->has('type')) {
@@ -33,6 +33,7 @@ class NameController extends Controller
         $results->orderBy('updated_at', 'desc');
         $results->with('user');
         $results = $results->paginate(15);
+
         return view('mod.names.index')->with('results', $results);
     }
 
@@ -49,7 +50,8 @@ class NameController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -60,7 +62,8 @@ class NameController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Name  $name
+     * @param \App\Name $name
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(Name $name)
@@ -70,13 +73,15 @@ class NameController extends Controller
         }
 
         $name->load('reviews', 'user');
+
         return view('mod.names.show')->with('name', $name);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Name  $name
+     * @param \App\Name $name
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(Name $name)
@@ -87,8 +92,9 @@ class NameController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Name  $name
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Name                $name
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Name $name)
@@ -99,7 +105,8 @@ class NameController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Name  $name
+     * @param \App\Name $name
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(Name $name)

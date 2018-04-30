@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class GenerateWhitelist extends Command
@@ -26,8 +25,6 @@ class GenerateWhitelist extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -41,7 +38,6 @@ class GenerateWhitelist extends Command
      */
     public function handle()
     {
-
         $whitelist = null;
 
         $users = User::where('disabled', false)
@@ -54,16 +50,16 @@ class GenerateWhitelist extends Command
         $bar = $this->output->createProgressBar($users->count());
 
         foreach ($users as $user) {
-            if (!$user->hasFinishedSetup() && is_null($user->name)) {
+            if (! $user->hasFinishedSetup() && is_null($user->name)) {
                 continue;
             }
             if (is_null($whitelist)) {
-                $whitelist = $user->guid .' ' . $user->id;
+                $whitelist = $user->guid.' '.$user->id;
             } else {
-                $whitelist = $whitelist . "\n" . $user->guid .' ' . $user->id;
+                $whitelist = $whitelist."\n".$user->guid.' '.$user->id;
             }
-            $count++;
-            if (!request()->has('noupdate') && is_null($user->whitelist)) {
+            ++$count;
+            if (! request()->has('noupdate') && is_null($user->whitelist)) {
                 $user->whitelist_at = Carbon::now();
                 $user->save();
             }
@@ -74,6 +70,6 @@ class GenerateWhitelist extends Command
         Cache::forget('whitelist');
         Cache::forever('whitelist', $whitelist);
 
-        $this->info("\nWhitelist procesada: " . $count);
+        $this->info("\nWhitelist procesada: ".$count);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
      * Redirect URL after login
      */
@@ -13,6 +12,5 @@ return [
     /*
      * Is using https ?
      */
-    'https' => false
-
+    'https' => false,
 ];

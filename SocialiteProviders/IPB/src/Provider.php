@@ -41,7 +41,7 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken($token)
     {
-        $response = $this->getHttpClient()->get('http://plataoplomo.wtf/forum/applications/oauth2server/interface/oauth/me.php?access_token='. $token);
+        $response = $this->getHttpClient()->get('http://plataoplomo.wtf/forum/applications/oauth2server/interface/oauth/me.php?access_token='.$token);
 
         return json_decode($response->getBody(), true);
     }
@@ -52,12 +52,12 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id' => $user['id'],
-            'username' => $user['username'],
+            'id'          => $user['id'],
+            'username'    => $user['username'],
             'displayName' => $user['displayName'],
-            'email' => $user['email'],
-            'profileUrl' => $user['profileUrl'],
-            'avatar'   => $user['avatar'],
+            'email'       => $user['email'],
+            'profileUrl'  => $user['profileUrl'],
+            'avatar'      => $user['avatar'],
         ]);
     }
 
@@ -67,7 +67,7 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return array_merge(parent::getTokenFields($code), [
-            'grant_type' => 'authorization_code'
+            'grant_type' => 'authorization_code',
         ]);
     }
 }

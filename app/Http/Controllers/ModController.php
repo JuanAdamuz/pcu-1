@@ -11,18 +11,14 @@ use App\Notifications\InterviewPassed;
 use App\Question;
 use App\Review;
 use App\User;
-use Barryvdh\Debugbar\Facade;
-use Barryvdh\Debugbar\Middleware\Debugbar;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ModController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware(['auth', 'setup_required']);
@@ -33,7 +29,7 @@ class ModController extends Controller
         if (! Auth::user()->hasPermission(['mod-search', 'mod-review*', 'mod-interview', 'mod-supervise*'])) {
             abort(403);
         }
-        $count = Cache::remember('mod.dashboard.' . \auth()->user()->id . 'count', 10, function () {
+        $count = Cache::remember('mod.dashboard.'.\auth()->user()->id.'count', 10, function () {
             $count = 0;
             if (Auth::user()->hasPermission('mod-review-names')) {
                 $count = $count + Name::reviewable()->count();
@@ -41,15 +37,18 @@ class ModController extends Controller
             if (Auth::user()->hasPermission('mod-review-answers')) {
                 $count = $count + Answer::reviewable()->count();
             }
+
             return $count;
         });
-        $supervisionCount = Cache::remember('mod.dashboard.' . \auth()->user()->id . 'totalCount', 10, function () {
+        $supervisionCount = Cache::remember('mod.dashboard.'.\auth()->user()->id.'totalCount', 10, function () {
             $supervisionCount = 0;
             if (Auth::user()->hasPermission('mod-supervise-answers')) {
                 $supervisionCount = $supervisionCount + Answer::where('needs_supervisor', true)->count();
             }
+
             return $supervisionCount;
         });
+
         return view('mod.dashboard')
             ->with('count', $count)
             ->with('supervisionCount', $supervisionCount);
@@ -60,6 +59,7 @@ class ModController extends Controller
         if (! Auth::user()->hasPermission(['mod-review-answers', 'mod-review-names'])) {
             abort(403);
         }
+
         return view('mod.review');
     }
 
@@ -69,10 +69,9 @@ class ModController extends Controller
             abort(403);
         }
 
-
         $options = [];
         if (Auth::user()->hasPermission('mod-review-answers')) {
-            $exists =  Answer::reviewable()->count() > 0;
+            $exists = Answer::reviewable()->count() > 0;
             if ($exists) {
                 $options[] = \App\Answer::class;
             }
@@ -90,7 +89,7 @@ class ModController extends Controller
             $chosen = $options[rand(0, sizeof($options) - 1)];
 
             // App\Answer
-            if ($chosen == \App\Answer::class) {
+            if (\App\Answer::class == $chosen) {
                 $answer = Answer::reviewable()
 //                    ->random()
 //                    ->orderByRaw("RAND()")
@@ -100,6 +99,7 @@ class ModController extends Controller
                 if (is_null($answer)) {
                     return [];
                 }
+
                 return ['answer' => $answer->makeHidden([
                     'question_id',
                     'exam_id',
@@ -112,10 +112,10 @@ class ModController extends Controller
                     'created_at',
                     'updated_at',
                     'answer_id',
-                    'score'
+                    'score',
                 ])->toArray()];
             }
-            if ($chosen == \App\Name::class) {
+            if (\App\Name::class == $chosen) {
                 $name = Name::reviewable()
 //                    ->random()
 //                    ->orderByRaw("RAND()")
@@ -124,6 +124,7 @@ class ModController extends Controller
                 if (is_null($name)) {
                     return [];
                 }
+
                 return ['name' => $name->makeHidden(['user_id', 'created_at', 'updated_at', 'deleted_at', 'active_at', 'end_at', 'needs_review', 'invalid', 'type'])->toArray()];
             }
         }
@@ -133,8 +134,10 @@ class ModController extends Controller
     }
 
     /**
-     * Añadir una review a una respuesta
+     * Añadir una review a una respuesta.
+     *
      * @param Request $request
+     *
      * @return string
      */
     public function review(Request $request)
@@ -144,12 +147,12 @@ class ModController extends Controller
         }
         // Validar que ningún listillo nos pase algo mal para probar
         $this->validate($request, [
-            'type' => 'required',
-            'id' => 'required|integer|min:1',
-            'score' => 'required|integer|min:0|max:100',
-            'abuse' => 'required|boolean',
+            'type'         => 'required',
+            'id'           => 'required|integer|min:1',
+            'score'        => 'required|integer|min:0|max:100',
+            'abuse'        => 'required|boolean',
             'abuseMessage' => 'nullable|max:200',
-            'abuseId' => 'nullable|max:200'
+            'abuseId'      => 'nullable|max:200',
         ]);
 
         $user = Auth::user();
@@ -157,7 +160,7 @@ class ModController extends Controller
         $type = null;
         $id = 0;
         // App\Answer
-        if ($request->input('type') == 'answer') {
+        if ('answer' == $request->input('type')) {
             if (! Auth::user()->hasPermission(['mod-review-answers'])) {
                 abort(403);
             }
@@ -173,7 +176,7 @@ class ModController extends Controller
         }
 
         // App\Name
-        if ($request->input('type') == 'name') {
+        if ('name' == $request->input('type')) {
             if (! Auth::user()->hasPermission(['mod-review-names'])) {
                 abort(403);
             }
@@ -187,7 +190,7 @@ class ModController extends Controller
 //            }
 
             // Si no necesita revisión
-            if (!$name->needs_review) {
+            if (! $name->needs_review) {
                 abort(403);
             }
         }
@@ -207,8 +210,8 @@ class ModController extends Controller
         $review->reviewable_id = $id;
         if ($request->input('abuse')) { // Si hay abuso, le ponemos un cerapio y miramos el mensaje
             $review->score = 0;
-            if ($request->input('abuseId') == 100) {
-                $review->abuse_message = 'Otro: "' . $request->input('abuseMessage') . '"';
+            if (100 == $request->input('abuseId')) {
+                $review->abuse_message = 'Otro: "'.$request->input('abuseMessage').'"';
             } else {
                 $review->abuse_message = $request->input('abuseId');
             }
@@ -219,7 +222,7 @@ class ModController extends Controller
         $review->save();
 
         // Da igual lo que devolvamos, la página va a comportarse igual
-        return "ok";
+        return 'ok';
     }
 
     public function searchPage(Request $request)
@@ -230,15 +233,16 @@ class ModController extends Controller
         $results = User::query();
         if ($request->has('q')) {
             $results->whereHas('names', function ($query) use ($request) {
-                $query->where('name', 'LIKE', '%' . $request->input('q') . '%');
+                $query->where('name', 'LIKE', '%'.$request->input('q').'%');
             });
-            $results->orWhere('steamid', 'LIKE', '%' . $request->input('q') . '%');
-            $results->orWhere('guid', 'LIKE', '%' . $request->input('q') . '%');
-            $results->orWhere('name', 'LIKE', '%' . $request->input('q') . '%');
+            $results->orWhere('steamid', 'LIKE', '%'.$request->input('q').'%');
+            $results->orWhere('guid', 'LIKE', '%'.$request->input('q').'%');
+            $results->orWhere('name', 'LIKE', '%'.$request->input('q').'%');
         }
 
         $results = $results->orderBy('updated_at', 'desc');
         $results = $results->paginate(15);
+
         return view('mod.search')->with('results', $results);
     }
 
@@ -248,6 +252,7 @@ class ModController extends Controller
             abort(403);
         }
         $user = User::findOrFail($id);
+
         return view('mod.user')->with('user', $user);
     }
 
@@ -257,10 +262,11 @@ class ModController extends Controller
             abort(403);
         }
         $user = User::findOrFail($id);
-        if ($user->hasPermission('protection-level-1') && !Auth::user()->hasPermission('protection-level-1-bypass')) {
+        if ($user->hasPermission('protection-level-1') && ! Auth::user()->hasPermission('protection-level-1-bypass')) {
             abort(403);
         }
-        return $user->birth_date->format('d/m/Y') . ' (' . $user->birth_date->age . ' años)';
+
+        return $user->birth_date->format('d/m/Y').' ('.$user->birth_date->age.' años)';
     }
 
     public function revealEmail($id)
@@ -269,9 +275,10 @@ class ModController extends Controller
             abort(403);
         }
         $user = User::findOrFail($id);
-        if ($user->hasPermission('protection-level-1') && !Auth::user()->hasPermission('protection-level-1-bypass')) {
+        if ($user->hasPermission('protection-level-1') && ! Auth::user()->hasPermission('protection-level-1-bypass')) {
             abort(403);
         }
+
         return $user->email;
     }
 
@@ -284,12 +291,13 @@ class ModController extends Controller
         if (is_null($exam->interview_at) || is_null($exam->interview_user_id)) {
             abort(403, 'Entrevista no empezada todavía');
         }
-        if (!$exam->interviewer->is($request->user())) {
+        if (! $exam->interviewer->is($request->user())) {
             abort(403, 'Otra persona está realizando la entrevista');
         }
-        if (!is_null($exam->interview_passed)) {
+        if (! is_null($exam->interview_passed)) {
             abort(403, 'Entrevista finalizada');
         }
+
         return view('mod.interview')->with('exam', $exam);
     }
 
@@ -299,22 +307,25 @@ class ModController extends Controller
             abort(403);
         }
         $exam = Exam::findOrFail($id);
-        if (!is_null($exam->interview_at) || !is_null($exam->interview_user_id)) {
-            if (!$exam->interviewer->is($request->user())) {
+        if (! is_null($exam->interview_at) || ! is_null($exam->interview_user_id)) {
+            if (! $exam->interviewer->is($request->user())) {
                 abort(403, 'Entrevista empezada por otra persona');
             }
+
             return redirect(route('mod-interview', $exam));
         }
         $exam->interview_at = Carbon::now();
         $exam->interview_user_id = Auth::user()->id;
         $exam->interview_code = Str::random(32);
         $exam->save();
+
         return redirect(route('mod-interview', $exam))->with('status', 'Entrevista comenzada');
     }
 
     /**
      * @param Request $request
      * @param $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function interviewCode(Request $request, $id)
@@ -324,15 +335,15 @@ class ModController extends Controller
         }
         $exam = Exam::findOrFail($id);
         // Comprobar si es el que está haciendo la entrevista
-        if (!$request->user()->is($exam->interviewer)) {
+        if (! $request->user()->is($exam->interviewer)) {
             abort(403, 'No eres el que está haciendo la entrevista');
         }
         // Comprobar si el examen ha empezado
-        if (!is_null($exam->interview_code_at) && !is_null($exam->interview_passed)) {
+        if (! is_null($exam->interview_code_at) && ! is_null($exam->interview_passed)) {
             return redirect(route('mod-interview', $exam))->with('status', 'Ya habías introducido el código...');
         }
         $this->validate($request, [
-           'code' => 'required|min:32|max:32'
+           'code' => 'required|min:32|max:32',
         ]);
 
         if ($request->input('code') != $exam->interview_code) {
@@ -342,6 +353,7 @@ class ModController extends Controller
         // Correcto, lo guardamos y movemos.
         $exam->interview_code_at = Carbon::now();
         $exam->save();
+
         return redirect(route('mod-interview', $exam))->with('status', 'Código correcto');
     }
 
@@ -352,10 +364,10 @@ class ModController extends Controller
         }
         $exam = Exam::findOrFail($id);
         // Comprobar si es el que está haciendo la entrevista
-        if (!$request->user()->is($exam->interviewer)) {
+        if (! $request->user()->is($exam->interviewer)) {
             abort(403, 'No eres el que está haciendo la entrevista');
         }
-        if (!is_null($exam->interview_passed)) {
+        if (! is_null($exam->interview_passed)) {
             return redirect(route('mod-user', $exam->user))->with('status', 'Entrevista finalizada');
         }
         $exam->interview_at = null;
@@ -363,6 +375,7 @@ class ModController extends Controller
         $exam->interview_code_at = null;
         $exam->interview_user_id = null;
         $exam->save();
+
         return redirect(route('mod-user', $exam->user))->with('status', 'Entrevista cancelada');
     }
 
@@ -373,15 +386,15 @@ class ModController extends Controller
         }
         $exam = Exam::findOrFail($id);
         // Comprobar si es el que está haciendo la entrevista
-        if (!$request->user()->is($exam->interviewer)) {
+        if (! $request->user()->is($exam->interviewer)) {
             abort(403, 'No eres el que está haciendo la entrevista');
         }
-        if (!is_null($exam->interview_passed)) {
-            return "OK...";
+        if (! is_null($exam->interview_passed)) {
+            return 'OK...';
         }
         $this->validate($request, [
             'pass' => 'required|boolean',
-            'pegi' => 'required|boolean'
+            'pegi' => 'required|boolean',
         ]);
         if ($request->input('pegi')) {
             $exam->interview_passed = false;
@@ -391,11 +404,12 @@ class ModController extends Controller
             $user = $exam->user;
             // Le bloqueamos instantáneamente la cuenta con motivo especial @pegi
             $user->disabled = true;
-            $user->disabled_reason = "@pegi"; // Motivo especial que le indica al login que debe mostrar la pág del pegi
+            $user->disabled_reason = '@pegi'; // Motivo especial que le indica al login que debe mostrar la pág del pegi
             $user->disabled_at = Carbon::now();
             $user->save();
-            Cache::forget('user.'. $user->id . '.getSetupStep');
-            return "OK";
+            Cache::forget('user.'.$user->id.'.getSetupStep');
+
+            return 'OK';
         }
 
         if ($request->input('pass')) {
@@ -403,20 +417,21 @@ class ModController extends Controller
             $exam->user->notify(new InterviewPassed($exam));
         } else {
             $exam->interview_passed = false;
-            if ($exam->user->getExamTriesRemaining() == 0) {
+            if (0 == $exam->user->getExamTriesRemaining()) {
                 $user = $exam->user;
                 $user->disabled = 1;
                 $user->disabled_reason = '@tries';
                 $user->disabled_at = Carbon::now();
                 $user->save();
-                Cache::forget('user.'. $user->id . '.getSetupStep');
+                Cache::forget('user.'.$user->id.'.getSetupStep');
             }
             $exam->user->notify(new InterviewFailed($exam));
         }
         $exam->interview_end_at = Carbon::now();
         $exam->save();
-        Cache::forget('user.'. $exam->user->id . '.getSetupStep');
-        return "OK";
+        Cache::forget('user.'.$exam->user->id.'.getSetupStep');
+
+        return 'OK';
     }
 
     public function supervisePage()
@@ -424,6 +439,7 @@ class ModController extends Controller
         if (! Auth::user()->hasPermission(['mod-review-answers'])) {
             abort(403);
         }
+
         return view('mod.supervise');
     }
 
@@ -447,15 +463,16 @@ class ModController extends Controller
             $chosen = $options[rand(0, sizeof($options) - 1)];
 
             // App\Answer
-            if ($chosen == \App\Answer::class) {
+            if (\App\Answer::class == $chosen) {
                 $answer = Answer::where('needs_supervisor', true)
-                    ->orderByRaw("RAND()")
+                    ->orderByRaw('RAND()')
                     ->take(10)
                     ->with(['question', 'reviews', 'reviews.user'])
                     ->first();
                 if (is_null($answer)) {
                     return [];
                 }
+
                 return ['answer' => $answer->makeHidden(['question_id', 'exam_id'])->toArray()];
             }
 //            if($chosen == 'App\Name'){
@@ -474,8 +491,10 @@ class ModController extends Controller
     }
 
     /**
-     * Añadir una review a una respuesta
+     * Añadir una review a una respuesta.
+     *
      * @param Request $request
+     *
      * @return string
      */
     public function supervise(Request $request)
@@ -485,12 +504,12 @@ class ModController extends Controller
         }
         // Validar que ningún listillo nos pase algo mal para probar
         $this->validate($request, [
-            'type' => 'required',
-            'id' => 'required|integer|min:1',
-            'score' => 'required|integer|min:0|max:100',
-            'abuse' => 'required|boolean',
+            'type'         => 'required',
+            'id'           => 'required|integer|min:1',
+            'score'        => 'required|integer|min:0|max:100',
+            'abuse'        => 'required|boolean',
             'abuseMessage' => 'nullable|max:200',
-            'abuseId' => 'nullable|max:200'
+            'abuseId'      => 'nullable|max:200',
         ]);
 
         $user = Auth::user();
@@ -498,7 +517,7 @@ class ModController extends Controller
         $type = null;
         $id = 0;
         // App\Answer
-        if ($request->input('type') == 'answer') {
+        if ('answer' == $request->input('type')) {
             if (! Auth::user()->hasPermission(['mod-supervise-answers'])) {
                 abort(403);
             }
@@ -527,7 +546,7 @@ class ModController extends Controller
                 // Desactivamos al usuario del tirón
                 $user = $answer->exam->user;
                 $user->disabled = true;
-                if ($request->input('abuseId') == 100) { // El motivo de desactivación
+                if (100 == $request->input('abuseId')) { // El motivo de desactivación
                     $user->disabled_reason = $request->input('abuseMessage');
                 } else {
                     $user->disabled_reason = $request->input('abuseId');
@@ -538,7 +557,7 @@ class ModController extends Controller
                 // Notificar al usuario
                 $user->notify(new AbuseSuspension($answer));
 
-                return "ok";
+                return 'ok';
             }
 
             // Si hemos llegado hasta aquí, suponemos que no hay abuso.
@@ -550,24 +569,24 @@ class ModController extends Controller
             $answer->supervisor_id = Auth::user()->id;
             $answer->save();
             // Y esto sería un poco la cosa.
-            return "ok";
+            return 'ok';
         }
         abort(403); // Si el usuario es un listillo, se lo decimos.
     }
 
     public function disableName(Request $request, $id)
     {
-        if (!Auth::user()->hasPermission('mod-name-reject')) {
+        if (! Auth::user()->hasPermission('mod-name-reject')) {
             abort(403);
         }
         $this->validate($request, [
-            'nameid' => 'required|integer'
+            'nameid' => 'required|integer',
         ]);
         $name = Name::findOrFail($request->input('nameid'));
         if (is_null($name->active_at)) {
             abort(403);
         }
-        if ($name->user->hasPermission('protection-level-1') && !Auth::user()->hasPermission('protection-level-1-bypass')) {
+        if ($name->user->hasPermission('protection-level-1') && ! Auth::user()->hasPermission('protection-level-1-bypass')) {
             abort(403);
         }
         $name->invalid = true;
@@ -575,22 +594,23 @@ class ModController extends Controller
         $name->needs_review = false;
         $name->end_at = Carbon::now();
         $name->save();
-        Cache::forget('user.'. $name->user->id . '.getSetupStep');
+        Cache::forget('user.'.$name->user->id.'.getSetupStep');
+
         return redirect(route('mod-user', $name->user))->with('status', 'Nombre desactivado');
     }
 
     public function enableName(Request $request, $id)
     {
-        if (!Auth::user()->hasPermission('mod-name-accept')) {
+        if (! Auth::user()->hasPermission('mod-name-accept')) {
             abort(403);
         }
         $this->validate($request, [
-            'nameid' => 'required|integer'
+            'nameid' => 'required|integer',
         ]);
 
         $name = Name::findOrFail($request->input('nameid'));
 
-        if (!($name->invalid || !is_null($name->end_at) || $name->needs_review)) {
+        if (! ($name->invalid || ! is_null($name->end_at) || $name->needs_review)) {
             abort(403);
         }
 
@@ -604,7 +624,8 @@ class ModController extends Controller
         $name->end_at = null;
         $name->needs_review = false;
         $name->save();
-        Cache::forget('user.'. $name->user->id . '.getSetupStep');
+        Cache::forget('user.'.$name->user->id.'.getSetupStep');
+
         return redirect(route('mod-user', $name->user))->with('status', 'Nombre activado');
     }
 }

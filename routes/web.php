@@ -73,7 +73,6 @@ Route::group(['prefix' => 'setup'], function () {
 Route::post('notifications/markallasread', 'NotificationsController@markAllAsRead')->name('notifications-allread');
 
 Route::group(['prefix' => 'mod'], function () {
-
     Route::get('/', 'ModController@dashboardPage')->name('mod-dashboard');
     Route::get('/', 'ModController@dashboardPage')->name('mod-dashboard');
     Route::get('/', 'ModController@dashboardPage')->name('mod-dashboard');
@@ -114,10 +113,8 @@ Route::group(['prefix' => 'mod'], function () {
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-
 // ACL
 Route::group(['prefix' => 'acl', 'middleware' => ['auth', 'admin']], function () {
-
     // Users
     Route::group(['prefix' => 'users'], function () {
         Route::get('/', 'ACL\UsersController@listUsers')->name('acl-users');
@@ -156,7 +153,7 @@ Route::group(['prefix' => 'whitelist'], function () {
     Route::get('download', 'WhitelistController@download')->name('whitelist-download');
 });
 
-Route::group(['prefix' => 'inrol', 'middleware' => ['auth', 'setup_required']], function() {
+Route::group(['prefix' => 'inrol', 'middleware' => ['auth', 'setup_required']], function () {
     Route::get('/dgt/matriculados', 'Inrol\Dgt\VehicleController@listOwnVehicles')->name('inrol-dgt-matriculados');
     Route::get('/dgt/permisos', 'Inrol\Dgt\VehicleController@viewOwnLicenses')->name('inrol-dgt-permisos');
 
@@ -164,14 +161,13 @@ Route::group(['prefix' => 'inrol', 'middleware' => ['auth', 'setup_required']], 
 
     Route::get('/banco/cuentas', 'Inrol\Banco\BankController@viewAccounts')->name('inrol-banco-cuentas');
 
-    Route::group(['prefix' => 'justicia'], function() {
-       Route::get('/personas', 'Inrol\Justicia\PlayerController@search')->name('inrol-justicia-personas');
+    Route::group(['prefix' => 'justicia'], function () {
+        Route::get('/personas', 'Inrol\Justicia\PlayerController@search')->name('inrol-justicia-personas');
     });
-
 });
 
 Route::get('poplifeservers.txt', 'ServerController@json');
 
-/** CATCH-ALL ROUTE for Backpack/PageManager - needs to be at the end of your routes.php file  **/
+/* CATCH-ALL ROUTE for Backpack/PageManager - needs to be at the end of your routes.php file  **/
 Route::get('{page}/{subs?}', ['uses' => 'PageController@index'])
     ->where(['page' => '^((?!admin).)*$', 'subs' => '.*'])->name('page')->middleware('auth');

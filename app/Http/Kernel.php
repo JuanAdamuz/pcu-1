@@ -8,7 +8,6 @@ use App\Http\Middleware\IntegrationEnabled;
 use App\Http\Middleware\LogOutDisabledUsers;
 use App\Http\Middleware\SetActiveAt;
 use App\Http\Middleware\SetupCheck;
-use Fideloper\Proxy\TrustProxies;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -62,17 +61,17 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'setup_required' => SetupCheck::class,
-        'role' => \Laratrust\Middleware\LaratrustRole::class,
-        'permission' => \Laratrust\Middleware\LaratrustPermission::class,
-        'ability' => \Laratrust\Middleware\LaratrustAbility::class,
-        'admin' => AdminMiddleware::class,
+        'auth'                 => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth.basic'           => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings'             => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'can'                  => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest'                => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'throttle'             => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'setup_required'       => SetupCheck::class,
+        'role'                 => \Laratrust\Middleware\LaratrustRole::class,
+        'permission'           => \Laratrust\Middleware\LaratrustPermission::class,
+        'ability'              => \Laratrust\Middleware\LaratrustAbility::class,
+        'admin'                => AdminMiddleware::class,
         'integration_required' => IntegrationEnabled::class,
     ];
 }

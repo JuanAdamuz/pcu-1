@@ -2,12 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Answer;
 use App\Exam;
-use App\Jobs\GradeAnswer;
 use App\Jobs\GradeExam;
-use App\Notifications\ExamFailed;
-use App\Notifications\ExamPassed;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -29,8 +25,6 @@ class GradeExams extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -52,10 +46,10 @@ class GradeExams extends Command
             })
             ->get();
         foreach ($exams as $exam) {
-            $this->info('Corrigiendo examen #' . $exam->id);
+            $this->info('Corrigiendo examen #'.$exam->id);
             dispatch(new GradeExam($exam));
         }
-        if ($exams->count() == 0) {
+        if (0 == $exams->count()) {
             $this->info('Nada que corregir.');
         }
     }

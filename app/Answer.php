@@ -29,7 +29,8 @@ class Answer extends Model implements \OwenIt\Auditing\Contracts\Auditable
         return $this->belongsTo(\App\Question::class);
     }
 
-    public function supervisor() {
+    public function supervisor()
+    {
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
@@ -50,7 +51,7 @@ class Answer extends Model implements \OwenIt\Auditing\Contracts\Auditable
             })
             ->has('reviews', '<', 3);
 
-        if (Auth::check() && !$total) {
+        if (Auth::check() && ! $total) {
             $query->whereDoesntHave('reviews', function ($query) use ($total) {
                 $query->where('user_id', Auth::user()->id);
             });
@@ -59,6 +60,7 @@ class Answer extends Model implements \OwenIt\Auditing\Contracts\Auditable
                 $query->where('user_id', 0);
             });
         }
+
         return $query;
     }
 

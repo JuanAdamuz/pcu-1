@@ -24,8 +24,6 @@ class CheckNames extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -44,17 +42,17 @@ class CheckNames extends Command
         $bar = $this->output->createProgressBar(count($players));
 
         foreach ($players as $player) {
-            if(is_null($player->user)) {
+            if (is_null($player->user)) {
                 continue;
             }
-            if(!is_null($player->user->name)) {
+            if (! is_null($player->user->name)) {
                 continue;
             }
             $name = $player->user->getActiveName();
-            if(!is_null($name) && $name != $player->name) {
+            if (! is_null($name) && $name != $player->name) {
                 $player->name = $name;
                 $player->save();
-                $this->info($player->name .  " > > " . $name);
+                $this->info($player->name.' > > '.$name);
             }
             $bar->advance();
         }

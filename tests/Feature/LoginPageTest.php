@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 class LoginPageTest extends TestCase
 {
@@ -13,8 +11,6 @@ class LoginPageTest extends TestCase
 
     /**
      * Comprobar si la página principal funciona.
-     *
-     * @return void
      */
     public function testLoginPageWorks()
     {

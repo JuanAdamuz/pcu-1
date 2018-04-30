@@ -4,9 +4,9 @@ namespace App\Notifications;
 
 use App\Exam;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class InterviewFailed extends Notification implements ShouldQueue
 {
@@ -16,8 +16,6 @@ class InterviewFailed extends Notification implements ShouldQueue
 
     /**
      * Create a new notification instance.
-     *
-     * @return void
      */
     public function __construct(Exam $exam)
     {
@@ -27,7 +25,8 @@ class InterviewFailed extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
@@ -43,13 +42,14 @@ class InterviewFailed extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-        if ($this->exam->user->getExamTriesRemaining() == 0) {
-            return (new MailMessage)
+        if (0 == $this->exam->user->getExamTriesRemaining()) {
+            return (new MailMessage())
                 ->subject('Has suspendido la entrevista')
                 ->error()
                 ->greeting('Tenemos malas noticias')
@@ -60,7 +60,7 @@ class InterviewFailed extends Notification implements ShouldQueue
 
         $url = route('setup-rules');
 
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject('Has suspendido la entrevista')
             ->error()
             ->greeting('Tenemos malas noticias')
@@ -73,17 +73,18 @@ class InterviewFailed extends Notification implements ShouldQueue
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            'icon' => 'sentiment_very_dissatisfied',
-            'title' => 'Has suspendido la entrevista',
-            'message' => 'Lamentamos informarte de que no has aprobado. Tendrás de volver a hacer la prueba escrita y la entrevista, te recomendamos repasarte lar normas. Cualquier duda, pregúntanos.',
-            'url' => route('setup-rules'),
-            'button_text' => 'Revisar las normas'
+            'icon'        => 'sentiment_very_dissatisfied',
+            'title'       => 'Has suspendido la entrevista',
+            'message'     => 'Lamentamos informarte de que no has aprobado. Tendrás de volver a hacer la prueba escrita y la entrevista, te recomendamos repasarte lar normas. Cualquier duda, pregúntanos.',
+            'url'         => route('setup-rules'),
+            'button_text' => 'Revisar las normas',
         ];
     }
 }

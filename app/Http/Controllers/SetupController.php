@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "PCU" system
+ * This file is part of the "PCU" system.
  *
  * (c) Apecengo <apecengo@gmail.com>
  *
@@ -29,7 +29,6 @@ use App\Page;
 use App\Question;
 use App\User;
 use Carbon\Carbon;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,11 +40,8 @@ use Syntax\SteamApi\Facades\SteamApi;
 
 class SetupController extends Controller
 {
-
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -55,6 +51,7 @@ class SetupController extends Controller
     public function welcome()
     {
         $user = Auth::user();
+
         return view('setup.welcome')->with('user', $user);
     }
 
@@ -65,27 +62,26 @@ class SetupController extends Controller
 
     public function checkGame()
     {
-
         $user = Auth::user();
         // Si ya sabemos que el usuario tenga el juego comprado, ¿para qué lo tenemos que comprobar?
         if ($user->has_game) {
-            return "true";
+            return 'true';
         }
 
-        $game = Cache::remember('setup.'.$user->id . 'checkGame.game', 1, function () use ($user) {
+        $game = Cache::remember('setup.'.$user->id.'checkGame.game', 1, function () use ($user) {
             return sizeof(SteamApi::player($user->steamid)->getOwnedGames(false, false, [107410]));
         });
         // Comprobar si no tiene el juego
-        if ($game == 0) {
-            return "false";
+        if (0 == $game) {
+            return 'false';
         }
 
-        $sharing = Cache::remember('setup.'.$user->id . 'checkGame.sharing', 1, function () use ($user) {
+        $sharing = Cache::remember('setup.'.$user->id.'checkGame.sharing', 1, function () use ($user) {
             return SteamApi::player($user->steamid)->IsPlayingSharedGame(107410);
         });
         // Comprobar si tiene Family Sharing
-        if ($sharing == 1) {
-            return "false";
+        if (1 == $sharing) {
+            return 'false';
         }
 
         // Si pasa los filtros, lo tiene. Lo actualizamos en la db.
@@ -93,10 +89,9 @@ class SetupController extends Controller
         $user->timestamps = false;
         $user->save();
         $user->timestamps = true;
-        Cache::forget('user.'. $user->id . '.getSetupStep');
+        Cache::forget('user.'.$user->id.'.getSetupStep');
 
-
-        return "true";
+        return 'true';
     }
 
     public function infoPage()
@@ -108,32 +103,32 @@ class SetupController extends Controller
     {
         $this->validate($request, [
             'birth_date' => 'nullable|date_format:d/m/Y',
-            'country' => 'nullable|cca2',
-            'timezone' => 'nullable|timezone'
+            'country'    => 'nullable|cca2',
+            'timezone'   => 'nullable|timezone',
         ], [
-            'birth_date.required' => 'La fecha de nacimiento es obligatoria.',
+            'birth_date.required'    => 'La fecha de nacimiento es obligatoria.',
             'birth_date.date_format' => 'El formato de la fecha de nacimiento es inválido. (debe ser dd/mm/aaa)',
-            'country.required' => 'El país de residencia es obligatorio.',
-            'country.cca2' => 'El país es inválido.',
-            'timezone.required' => 'La zona horaria es obligatoria.',
-            'timezone.timezone' => 'La zona horaria es inválida.'
+            'country.required'       => 'El país de residencia es obligatorio.',
+            'country.cca2'           => 'El país es inválido.',
+            'timezone.required'      => 'La zona horaria es obligatoria.',
+            'timezone.timezone'      => 'La zona horaria es inválida.',
         ]);
 
         $user = Auth::user();
         if (is_null($user->birth_date)) {
-            if (!$request->has('birth_date') || trim($request->input('birth_date') == '')) {
+            if (! $request->has('birth_date') || trim('' == $request->input('birth_date'))) {
                 return redirect(route('setup-info'))->withErrors(['birth_date' => 'La fecha de nacimiento es obligatoria.']);
             }
             $user->birth_date = Carbon::createFromFormat('d/m/Y', $request->input('birth_date'));
         }
         if (is_null($user->country)) {
-            if (!$request->has('country')) {
+            if (! $request->has('country')) {
                 return redirect(route('setup-info'))->withErrors(['country' => 'El país de nacimiento es obligatorio.']);
             }
             $user->country = $request->input('country');
         }
         if (is_null($user->attributes['timezone'])) {
-            if (!$request->has('timezone')) {
+            if (! $request->has('timezone')) {
                 return redirect(route('setup-info'))->withErrors(['timezone' => 'La zona horaria es obligatoria.']);
             }
             $user->timezone = $request->input('timezone');
@@ -143,7 +138,7 @@ class SetupController extends Controller
         if ($user->birth_date->age < 16 || $user->birth_date->isFuture()) {
             // Le bloqueamos instantáneamente la cuenta con motivo especial @pegi
             $user->disabled = true;
-            $user->disabled_reason = "@pegi"; // Motivo especial que le indica al login que debe mostrar la pág del pegi
+            $user->disabled_reason = '@pegi'; // Motivo especial que le indica al login que debe mostrar la pág del pegi
             $user->disabled_at = Carbon::now();
             Auth::logout(); // Le cerramos sesión
             $user->timestamps = false;
@@ -156,8 +151,8 @@ class SetupController extends Controller
         $user->timestamps = false;
         $user->save();
         $user->timestamps = true;
-        Cache::forget('user.'. $user->id . '.getSetupStep');
-        Cache::forget('user.' . $user->id . '.attributes.timezone');
+        Cache::forget('user.'.$user->id.'.getSetupStep');
+        Cache::forget('user.'.$user->id.'.attributes.timezone');
 
         // Comprobamos la fecha de nacimiento
 
@@ -172,8 +167,8 @@ class SetupController extends Controller
     public function email(Request $request)
     {
         $this->validate($request, [
-            'email' => 'nullable|email|unique:users,email',
-            'enable' => 'boolean'
+            'email'  => 'nullable|email|unique:users,email',
+            'enable' => 'boolean',
         ]);
 
         if ($request->input('enable')) {
@@ -185,9 +180,10 @@ class SetupController extends Controller
             $user->timestamps = false;
             $user->save();
             $user->timestamps = true;
-            Cache::forget('user.'. $user->id . '.getSetupStep');
+            Cache::forget('user.'.$user->id.'.getSetupStep');
             Mail::to($user)->send(new VerifyEmail($user));
-            return "next"; // Le indicamos a la página que todavía hay que verificar...
+
+            return 'next'; // Le indicamos a la página que todavía hay que verificar...
         } else {
             // El usuario no ha activado su email
             $user = Auth::user();
@@ -199,8 +195,9 @@ class SetupController extends Controller
             $user->timestamps = false;
             $user->save();
             $user->timestamps = true;
-            Cache::forget('user.'. $user->id . '.getSetupStep');
-            return "next";
+            Cache::forget('user.'.$user->id.'.getSetupStep');
+
+            return 'next';
         }
     }
 
@@ -217,6 +214,7 @@ class SetupController extends Controller
     public function namePage()
     {
         $user = Auth::user();
+
         return view('setup.name')
             ->with('user', $user);
     }
@@ -225,24 +223,27 @@ class SetupController extends Controller
     {
         $this->validate($request, [
            'firstName' => 'required|min:3|max:14',
-           'lastName' => 'required|min:3|max:14'
+           'lastName'  => 'required|min:3|max:14',
         ]);
-        $name = trim($request->input('firstName')) . " " . trim($request->input('lastName'));
+        $name = trim($request->input('firstName')).' '.trim($request->input('lastName'));
 
-        if(!preg_match('/^[ a-záéíóúñ]+$/iu', $name)) {
-            abort(412, "El nombre solo puede contener letras en castellano y espacios.");
+        if (! preg_match('/^[ a-záéíóúñ]+$/iu', $name)) {
+            abort(412, 'El nombre solo puede contener letras en castellano y espacios.');
         }
 
         if (User::where('name', 'LIKE', $name)->count() > 0
             || Name::where('name', 'LIKE', $name)->count() > 0) {
-            return "taken";
+            return 'taken';
         }
-        return "OK";
+
+        return 'OK';
     }
 
     /**
-     * POST cambiar el nombre
+     * POST cambiar el nombre.
+     *
      * @param Request $request
+     *
      * @return string
      */
     public function name(Request $request)
@@ -250,18 +251,18 @@ class SetupController extends Controller
         // Comprueba que haya nombre y apellidos enviados
         $this->validate($request, [
             'firstName' => 'required|min:3|max:14',
-            'lastName' => 'required|min:3|max:14'
+            'lastName'  => 'required|min:3|max:14',
         ]);
 
         // Limpia el nombre completo de espacios innecesarios y añade un espacio entre nombre y apellido
-        $fullName = trim($request->input('firstName')) . " " . trim($request->input('lastName'));
+        $fullName = trim($request->input('firstName')).' '.trim($request->input('lastName'));
 
         // Comprueba con correspondencia "poco estricta" LIKE a ver si hay algún nombre parecido en POP o
         // haciendo la entrevista
         if (User::where('name', 'LIKE', $fullName)->count() > 0
             || Name::where('name', 'LIKE', $fullName)->count() > 0) {
             // Devolvemos que ya está cogido para que la página informe al usuario
-            return "taken";
+            return 'taken';
         }
 
         $user = Auth::user();
@@ -274,10 +275,10 @@ class SetupController extends Controller
         }
 
         $name->name = $correctedName;
-        $name->type = "setup";
+        $name->type = 'setup';
         $name->needs_review = true;
         $user->names()->save($name);
-        Cache::forget('user.'. $user->id . '.getSetupStep');
+        Cache::forget('user.'.$user->id.'.getSetupStep');
 
 //        $user->name = $name;
 //        $user->timestamps = false; // Como es un cambio que no lo ha iniciado nadie ni importa realmente actualizar
@@ -286,11 +287,12 @@ class SetupController extends Controller
 //        $user->timestamps = true;
 
         // Informamos a la página que no hay problema y que puede continuar con el proceso.
-        return "OK";
+        return 'OK';
     }
 
     /**
      * Página de las normas.
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function rulesPage()
@@ -304,7 +306,7 @@ class SetupController extends Controller
             $user->timestamps = false;
             $user->save();
             $user->timestamps = true;
-            Cache::forget('user.'. $user->id . '.getSetupStep');
+            Cache::forget('user.'.$user->id.'.getSetupStep');
         }
 
         $rules = Page::where('slug', 'normas')->first();
@@ -314,32 +316,33 @@ class SetupController extends Controller
 
     public function rulesCheck(Request $request)
     {
-        if (!$request->user()->canSeeRules()) {
+        if (! $request->user()->canSeeRules()) {
             abort(403, 'No puedes ver las normas ahora');
         }
     }
 
     /**
      * Generar un examen y redireccionar.
+     *
      * @param Request $request
      */
     public function generateExam(Request $request)
     {
-        if (!config('exam.enabled') || $request->user()->hasExamCooldown()) {
+        if (! config('exam.enabled') || $request->user()->hasExamCooldown()) {
             abort(403, 'No puedes generar otro examen');
         }
         $user = $request->user();
         if (is_null($user->getOngoingExam())) {
             $config = config('exam.structure');
-            $structure  = $config;
+            $structure = $config;
             $groupCount = 0;
             $questionIds = [];
             foreach ($config as $group) {
                 $questionCount = 0;
                 foreach ($group['questions'] as $question) {
-                    if ($question['type'] == 'question') {
+                    if ('question' == $question['type']) {
                         $structure[$groupCount]['questions'][$questionCount]['answer_id'] = null;
-                    } elseif ($question['type'] == 'category') {
+                    } elseif ('category' == $question['type']) {
                         $questionModel = Question::where('enabled', true)
                             ->where('category_id', $question['id'])
                             ->orderByRaw('RAND()')
@@ -351,9 +354,9 @@ class SetupController extends Controller
                         $structure[$groupCount]['questions'][$questionCount]['answer_id'] = null;
                         $structure[$groupCount]['questions'][$questionCount]['id'] = $questionModel->id;
                     }
-                    $questionCount++;
+                    ++$questionCount;
                 }
-                $groupCount++;
+                ++$groupCount;
             }
             $exam = new Exam();
             $exam->user_id = $user->id;
@@ -363,7 +366,8 @@ class SetupController extends Controller
             $exam->finished = false;
             $exam->structure = $structure;
             $exam->save();
-            Cache::forget('user.'. $user->id . '.getSetupStep');
+            Cache::forget('user.'.$user->id.'.getSetupStep');
+
             return redirect(route('setup-exam'));
         }
         // si el usuario está haciendo un examen en el momento
@@ -372,10 +376,9 @@ class SetupController extends Controller
 
     public function examPage($page = null)
     {
-
         $user = Auth::user();
         // Si el usuario tiene un examen en curso
-        if (!is_null($user->getOngoingExam())) {
+        if (! is_null($user->getOngoingExam())) {
             // ¿Ha pedido una página en concreto?
             if (! isset($page)) {
                 $exam = $user->getOngoingExam();
@@ -415,6 +418,7 @@ class SetupController extends Controller
                             if (is_null(Question::find($question['id']))) {
                                 abort(500, 'No se encuentra la pregunta');
                             }
+
                             return view('setup.exam')
                                 ->with('exam', $exam)
                                 ->with('group', $group)
@@ -422,7 +426,7 @@ class SetupController extends Controller
                                 ->with('type', 'question')
                                 ->with('pageNumber', $pageNumber);
                         }
-                        $count++;
+                        ++$count;
                     }
                 }
 
@@ -452,18 +456,18 @@ class SetupController extends Controller
     public function exam(Request $request, $page)
     {
         $pageNumber = $page;
-        if ($page == 0) {
+        if (0 == $page) {
             abort(405);
         } else {
             $user = Auth::user();
             $exam = $user->exams()->whereNull('passed')->orderByDesc('created_at')->first();
             // Si el examen ha terminado hace más de un minuto o ya ha sido terminado
             if ($exam->end_at->addMinutes(1) < Carbon::now() || $exam->finished) {
-                return "next";
+                return 'next';
             }
             $structure = $exam->structure;
             if ($page != $exam->getCurrentQuestionNumber()) {
-                return "next";
+                return 'next';
             }
             $count = 1;
             $groupCount = 0;
@@ -498,28 +502,29 @@ class SetupController extends Controller
                                 $exam->finished = true;
                                 $exam->finished_at = Carbon::now();
                                 $exam->save();
-                                Cache::forget('user.'. $exam->user->id . '.getSetupStep');
+                                Cache::forget('user.'.$exam->user->id.'.getSetupStep');
                                 dispatch(new GradeExam($exam));
-                                return "next";
+
+                                return 'next';
                             }
 
                             $exam->save();
-                            Cache::forget('user.'. $exam->user->id . '.getSetupStep');
-                            return "next";
+                            Cache::forget('user.'.$exam->user->id.'.getSetupStep');
+
+                            return 'next';
                         } else {
                             // Si ya había respondido, le mandamos a la siguiente también.
                             // Por si son unos listillos.
-                            return "next";
+                            return 'next';
                         }
                     }
-                    $questionCount++;
-                    $count++;
+                    ++$questionCount;
+                    ++$count;
                 }
-                $groupCount++;
+                ++$groupCount;
             }
         }
     }
-
 
     public function forumPage()
     {
@@ -541,7 +546,7 @@ class SetupController extends Controller
         } catch (ServerException $exception) {
             return view('setup.forumerror');
         }
-        if (!is_null($user->ipb_token)) {
+        if (! is_null($user->ipb_token)) {
             return redirect(route('setup-interview'));
         }
         $user->ipb_token = $oauth->token;
@@ -550,7 +555,8 @@ class SetupController extends Controller
         $user->timestamps = false;
         $user->save();
         $user->timestamps = true;
-        Cache::forget('user.'. $user->id . '.getSetupStep');
+        Cache::forget('user.'.$user->id.'.getSetupStep');
+
         return redirect(route('setup-interview'));
     }
 
@@ -558,11 +564,12 @@ class SetupController extends Controller
     {
         if ($request->user()->hasInterviewOngoing()) {
             $exam = $request->user()->getInterviewExam();
+
             return view('setup.interview_on')->with('exam', $exam);
         }
+
         return view('setup.interview');
     }
-
 
     public function correctSpelling($name)
     {
@@ -570,13 +577,15 @@ class SetupController extends Controller
     }
 
     /**
-     * http://php.net/manual/es/function.ucwords.php#112795
+     * http://php.net/manual/es/function.ucwords.php#112795.
+     *
      * @param $string
      * @param array $delimiters
      * @param array $exceptions
+     *
      * @return mixed|string
      */
-    function titleCase($string, $delimiters = [" ", "-", ".", "'", "O'", "Mc"], $exceptions = ["de", "da", "dos", "das", "do", "del", "I", "II", "III", "IV", "V", "VI"])
+    public function titleCase($string, $delimiters = [' ', '-', '.', "'", "O'", 'Mc'], $exceptions = ['de', 'da', 'dos', 'das', 'do', 'del', 'I', 'II', 'III', 'IV', 'V', 'VI'])
     {
         /*
          * Exceptions in lower case are words you don't want converted
@@ -584,18 +593,18 @@ class SetupController extends Controller
          *   but should be converted to upper case, e.g.:
          *   king henry viii or king henry Viii should be King Henry VIII
          */
-        $string = mb_convert_case($string, MB_CASE_TITLE, "UTF-8");
+        $string = mb_convert_case($string, MB_CASE_TITLE, 'UTF-8');
         foreach ($delimiters as $dlnr => $delimiter) {
             $words = explode($delimiter, $string);
             $newwords = [];
             foreach ($words as $wordnr => $word) {
-                if (in_array(mb_strtoupper($word, "UTF-8"), $exceptions)) {
+                if (in_array(mb_strtoupper($word, 'UTF-8'), $exceptions)) {
                     // check exceptions list for any words that should be in upper case
-                    $word = mb_strtoupper($word, "UTF-8");
-                } elseif (in_array(mb_strtolower($word, "UTF-8"), $exceptions)) {
+                    $word = mb_strtoupper($word, 'UTF-8');
+                } elseif (in_array(mb_strtolower($word, 'UTF-8'), $exceptions)) {
                     // check exceptions list for any words that should be in upper case
-                    $word = mb_strtolower($word, "UTF-8");
-                } elseif (!in_array($word, $exceptions)) {
+                    $word = mb_strtolower($word, 'UTF-8');
+                } elseif (! in_array($word, $exceptions)) {
                     // convert to uppercase (non-utf8 only)
                     $word = ucfirst($word);
                 }

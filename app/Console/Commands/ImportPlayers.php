@@ -14,64 +14,64 @@ use Illuminate\Support\Facades\DB;
 
 class ImportPlayers extends Command
 {
-
     private $correct = [
         // Nombres
-        'Raul' => 'Raúl',
-        'Oscar' => 'Óscar',
-        'Alvaro' => 'Álvaro',
-        'Andres' => 'Andrés',
-        'Angel' => 'Ángel',
-        'Jesus' => 'Jesús',
-        'Adrian' => 'Adrián',
-        'Guzman' => 'Guzmán',
-        'Ivan' => 'Iván',
+        'Raul'      => 'Raúl',
+        'Oscar'     => 'Óscar',
+        'Alvaro'    => 'Álvaro',
+        'Andres'    => 'Andrés',
+        'Angel'     => 'Ángel',
+        'Jesus'     => 'Jesús',
+        'Adrian'    => 'Adrián',
+        'Guzman'    => 'Guzmán',
+        'Ivan'      => 'Iván',
         'Sebastian' => 'Sebastián',
-        'Ruben' => 'Rubén',
-        'Julian' => 'Julián',
-        'Fermin' => 'Fermín',
-        'Cesar' => 'César',
-        'Matias' => 'Matías',
-        'Agustin' => 'Agustín',
-        'Joaquin' => 'Joaquín',
-        'Martin' => 'Martín',
-        'Tobias' => 'Tobías',
+        'Ruben'     => 'Rubén',
+        'Julian'    => 'Julián',
+        'Fermin'    => 'Fermín',
+        'Cesar'     => 'César',
+        'Matias'    => 'Matías',
+        'Agustin'   => 'Agustín',
+        'Joaquin'   => 'Joaquín',
+        'Martin'    => 'Martín',
+        'Tobias'    => 'Tobías',
         // Apellidos
         'Rodriguez' => 'Rodríguez',
         'Hernandez' => 'Hernández',
         'Fernandez' => 'Fernández',
-        'Martinez' => 'Martínez',
-        'Gonzalez' => 'González',
-        'Gonzales' => 'González',
-        'Garcia' => 'García',
-        'Casarin' => 'Casarín',
-        'Benitez' => 'Benítez',
-        'Gomez' => 'Gómez',
-        'Sanchez' => 'Sánchez',
-        'Lopez' => 'López',
-        'Perez' => 'Pérez',
-        'Marquez' => 'Márquez',
+        'Martinez'  => 'Martínez',
+        'Gonzalez'  => 'González',
+        'Gonzales'  => 'González',
+        'Garcia'    => 'García',
+        'Casarin'   => 'Casarín',
+        'Benitez'   => 'Benítez',
+        'Gomez'     => 'Gómez',
+        'Sanchez'   => 'Sánchez',
+        'Lopez'     => 'López',
+        'Perez'     => 'Pérez',
+        'Marquez'   => 'Márquez',
         'Gutierrez' => 'Gutiérrez',
-        'Diaz' => 'Díaz',
-        'Avila' => 'Ávila',
-        'Suarez' => 'Suárez',
-        'Ramirez' => 'Ramírez',
-        'Beltran' => 'Beltrán',
-        'Ibañez' => 'Ibáñez',
-        'Vazquez' => 'Vázquez',
-        'Millan' => 'Millán',
-        'Lazaro' => 'Lázaro',
-        'Cardenas' => 'Cárdenas',
+        'Diaz'      => 'Díaz',
+        'Avila'     => 'Ávila',
+        'Suarez'    => 'Suárez',
+        'Ramirez'   => 'Ramírez',
+        'Beltran'   => 'Beltrán',
+        'Ibañez'    => 'Ibáñez',
+        'Vazquez'   => 'Vázquez',
+        'Millan'    => 'Millán',
+        'Lazaro'    => 'Lázaro',
+        'Cardenas'  => 'Cárdenas',
         // Diminutivos
 
         // Troll
-        'Yesus' => 'Jesús',
-        'Yisus' => 'Jesús',
+        'Yesus'   => 'Jesús',
+        'Yisus'   => 'Jesús',
         'Jesulín' => 'Jesús',
     ];
 
     /**
      * Jugadores que tienen que repetir el examen.
+     *
      * @var array
      */
     private $repeat = [
@@ -79,11 +79,9 @@ class ImportPlayers extends Command
     ];
 
     private $except = [
-        'Ivánov' => 'Ivanov',
-        'Ivánero' => 'Ivanero'
+        'Ivánov'  => 'Ivanov',
+        'Ivánero' => 'Ivanero',
     ];
-
-
 
     /**
      * The name and signature of the console command.
@@ -101,8 +99,6 @@ class ImportPlayers extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -117,7 +113,7 @@ class ImportPlayers extends Command
     public function handle()
     {
         $players = DB::table('players')->get();
-        $this->info('Encontrados ' . $players->count() . ' jugadores para importar');
+        $this->info('Encontrados '.$players->count().' jugadores para importar');
         $bar = $this->output->createProgressBar($players->count());
         $count = 0;
         foreach ($players as $player) {
@@ -140,9 +136,9 @@ class ImportPlayers extends Command
             }
             $name->name = $correctedName; // Corrección de faltas de ortografía
             $name->type = 'imported';
-            if ($player->adminlevel == 0) {
+            if (0 == $player->adminlevel) {
                 // Si no tiene espacios o tiene caracteres raros... está mal.
-                if (substr_count($correctedName, ' ') == 0 || substr_count($correctedName, '.') > 0) {
+                if (0 == substr_count($correctedName, ' ') || substr_count($correctedName, '.') > 0) {
                     $name->needs_review = false;
                     $name->invalid = true;
                     $user->names()->save($name); // guardarlo y rechazarlo, notificando al usuario
@@ -173,7 +169,7 @@ class ImportPlayers extends Command
 
             // GUID
             $guid = $user->guid; // generamos la GUID para poder buscar por GUID
-            $count++;
+            ++$count;
             $bar->advance();
         }
         $bar->finish();
@@ -185,13 +181,15 @@ class ImportPlayers extends Command
     }
 
     /**
-     * http://php.net/manual/es/function.ucwords.php#112795
+     * http://php.net/manual/es/function.ucwords.php#112795.
+     *
      * @param $string
      * @param array $delimiters
      * @param array $exceptions
+     *
      * @return mixed|string
      */
-    function titleCase($string, $delimiters = [" ", "-", ".", "'", "O'", "Mc"], $exceptions = ["de", "da", "dos", "das", "do", "del", "I", "II", "III", "IV", "V", "VI"])
+    public function titleCase($string, $delimiters = [' ', '-', '.', "'", "O'", 'Mc'], $exceptions = ['de', 'da', 'dos', 'das', 'do', 'del', 'I', 'II', 'III', 'IV', 'V', 'VI'])
     {
         /*
          * Exceptions in lower case are words you don't want converted
@@ -199,18 +197,18 @@ class ImportPlayers extends Command
          *   but should be converted to upper case, e.g.:
          *   king henry viii or king henry Viii should be King Henry VIII
          */
-        $string = mb_convert_case($string, MB_CASE_TITLE, "UTF-8");
+        $string = mb_convert_case($string, MB_CASE_TITLE, 'UTF-8');
         foreach ($delimiters as $dlnr => $delimiter) {
             $words = explode($delimiter, $string);
             $newwords = [];
             foreach ($words as $wordnr => $word) {
-                if (in_array(mb_strtoupper($word, "UTF-8"), $exceptions)) {
+                if (in_array(mb_strtoupper($word, 'UTF-8'), $exceptions)) {
                     // check exceptions list for any words that should be in upper case
-                    $word = mb_strtoupper($word, "UTF-8");
-                } elseif (in_array(mb_strtolower($word, "UTF-8"), $exceptions)) {
+                    $word = mb_strtoupper($word, 'UTF-8');
+                } elseif (in_array(mb_strtolower($word, 'UTF-8'), $exceptions)) {
                     // check exceptions list for any words that should be in upper case
-                    $word = mb_strtolower($word, "UTF-8");
-                } elseif (!in_array($word, $exceptions)) {
+                    $word = mb_strtolower($word, 'UTF-8');
+                } elseif (! in_array($word, $exceptions)) {
                     // convert to uppercase (non-utf8 only)
                     $word = ucfirst($word);
                 }

@@ -3,16 +3,11 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PolicyPageTest extends TestCase
 {
     /**
-     * Comprobar que la página de términos y condiciones funciona
-     *
-     * @return void
+     * Comprobar que la página de términos y condiciones funciona.
      */
     public function testTosPageWorks()
     {
@@ -22,9 +17,7 @@ class PolicyPageTest extends TestCase
     }
 
     /**
-     * Comprobar que la página de la Política de Privacidad funciona
-     *
-     * @return void
+     * Comprobar que la página de la Política de Privacidad funciona.
      */
     public function testPrivacyPageWorks()
     {
@@ -34,9 +27,7 @@ class PolicyPageTest extends TestCase
     }
 
     /**
-     * Comprobar que la página de la Política de Monetización funciona
-     *
-     * @return void
+     * Comprobar que la página de la Política de Monetización funciona.
      */
     public function testMonetizationPageWorks()
     {

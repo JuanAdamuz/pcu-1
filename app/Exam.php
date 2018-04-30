@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
 
 class Exam extends Model implements \OwenIt\Auditing\Contracts\Auditable
@@ -31,7 +30,7 @@ class Exam extends Model implements \OwenIt\Auditing\Contracts\Auditable
       'interview_at', 'interview_audio_encoded_at', 'interview_audio_message',
         'interview_audio_url', 'interview_passed', 'interview_user_id',
         'passed_message', 'passed_temporal', 'review_at', 'review_required',
-        'review_user_id', 'score', 'interview_code'
+        'review_user_id', 'score', 'interview_code',
     ];
 
     protected $dates = [
@@ -47,7 +46,7 @@ class Exam extends Model implements \OwenIt\Auditing\Contracts\Auditable
     ];
 
     protected $casts = [
-        'structure' => 'array'
+        'structure' => 'array',
     ];
 
     public function getQuestionCount()
@@ -56,6 +55,7 @@ class Exam extends Model implements \OwenIt\Auditing\Contracts\Auditable
         foreach ($this->structure as $group) {
             $count = $count + sizeof($group['questions']);
         }
+
         return $count;
     }
 
@@ -67,7 +67,7 @@ class Exam extends Model implements \OwenIt\Auditing\Contracts\Auditable
                 if (is_null($question['answer_id'])) {
                     return $current;
                 } else {
-                    $current++;
+                    ++$current;
                 }
             }
         }
@@ -81,6 +81,7 @@ class Exam extends Model implements \OwenIt\Auditing\Contracts\Auditable
                 $total = $total + $question['value'];
             }
         }
+
         return $total;
     }
 
@@ -96,6 +97,7 @@ class Exam extends Model implements \OwenIt\Auditing\Contracts\Auditable
                 }
             }
         }
+
         return false;
     }
 }

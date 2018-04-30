@@ -22,8 +22,6 @@ class ProccessReviews extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -37,6 +35,5 @@ class ProccessReviews extends Command
      */
     public function handle()
     {
-        //
     }
 }

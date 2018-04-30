@@ -25,8 +25,6 @@ class PurgeExams extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -50,8 +48,8 @@ class PurgeExams extends Command
         foreach ($exams as $exam) {
             $exam->user->notify(new ExamExpired($exam));
             $exam->delete();
-            $count++;
+            ++$count;
         }
-        $this->info('Purgados ' . $count . ' exámenes expirados.');
+        $this->info('Purgados '.$count.' exámenes expirados.');
     }
 }

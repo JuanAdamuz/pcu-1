@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'cache' => [
         'enabled' => true,
 
@@ -16,24 +15,24 @@ return [
         'after' => true,
 
         'elements' => [
-            'flag' => true,
-            'currency' => true,
-            'states' => true,
-            'timezone' => true,
-            'borders' => false,
-            'topology' => true,
-            'geometry' => true,
+            'flag'       => true,
+            'currency'   => true,
+            'states'     => true,
+            'timezone'   => true,
+            'borders'    => false,
+            'topology'   => true,
+            'geometry'   => true,
             'collection' => true,
         ],
     ],
     'maps' => [
-        'lca3' => 'ISO639_3',
+        'lca3'     => 'ISO639_3',
         'currency' => 'ISO4217',
     ],
 
     'validation' => [
         'enabled'    => true,
-        'rules'    => [
+        'rules'      => [
             'country'            => 'name.common',
             'cca2',
             'cca2',
@@ -45,5 +44,4 @@ return [
             'language_short'    => 'ISO639_3',
         ],
     ],
-
 ];

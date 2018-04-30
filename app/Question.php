@@ -10,12 +10,12 @@ class Question extends Model implements \OwenIt\Auditing\Contracts\Auditable
     use Auditable;
 
     protected $casts = [
-        'options' => 'array'
+        'options' => 'array',
     ];
 
     protected $hidden = [
         'category_id',
         'answers',
-        'score'
+        'score',
     ];
 }

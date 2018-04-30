@@ -7,16 +7,15 @@ use Illuminate\Http\Request;
 
 class DiscourseController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware(['auth', 'setup_required']);
     }
 
-    public function sso(Request $request) {
-
+    public function sso(Request $request)
+    {
         $secret = config('pcu.discourse_secret');
-        if(is_null($secret)) {
+        if (is_null($secret)) {
             abort(404);
         }
 
@@ -29,7 +28,7 @@ class DiscourseController extends Controller
         $signature = $_GET['sig'];
 
         // validate the payload
-        if (!($sso->validatePayload($payload,$signature))) {
+        if (! ($sso->validatePayload($payload, $signature))) {
             // invaild, deny
             abort(403);
         }
@@ -45,7 +44,7 @@ class DiscourseController extends Controller
         // Required and must be consistent with your application
         $userEmail = $user->email;
 
-        if(is_null($userEmail) || !$user->email_verified) {
+        if (is_null($userEmail) || ! $user->email_verified) {
             return view('errors.emailerror');
         }
 
@@ -54,21 +53,21 @@ class DiscourseController extends Controller
 
         $name = null;
 
-        if(!is_null($user->name)) {
+        if (! is_null($user->name)) {
             $name = $user->name;
         } else {
             $name = $user->getActiveName();
         }
 
-        $extraParameters = array(
-            'username' => strtolower(str_replace(' ', '', $name)),
-            'name'     => $name,
-            'require_activation' => true
-        );
+        $extraParameters = [
+            'username'           => strtolower(str_replace(' ', '', $name)),
+            'name'               => $name,
+            'require_activation' => true,
+        ];
 
         // build query string and redirect back to the Discourse site
         $query = $sso->getSignInString($nonce, $userId, $userEmail, $extraParameters);
-        header('Location: https://foro.poplife.wtf/session/sso_login?' . $query);
+        header('Location: https://foro.poplife.wtf/session/sso_login?'.$query);
         exit(0);
     }
 }

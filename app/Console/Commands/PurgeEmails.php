@@ -24,8 +24,6 @@ class PurgeEmails extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -56,8 +54,8 @@ class PurgeEmails extends Command
             $user->timestamps = false;
             $user->save();
             $user->timestamps = true;
-            $count++;
+            ++$count;
         }
-        $this->info('Purgados ' . $count . ' correos no validados.');
+        $this->info('Purgados '.$count.' correos no validados.');
     }
 }

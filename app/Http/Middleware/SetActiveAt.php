@@ -12,8 +12,9 @@ class SetActiveAt
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     *
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -28,7 +29,7 @@ class SetActiveAt
         if (Auth::check()) {
             $user = Auth::user();
             // Guardamos en el cache 5 minutos si está activo, para evitar carga a la DB
-            if (!Cache::has('user_is_active_'.$user->id)) {
+            if (! Cache::has('user_is_active_'.$user->id)) {
                 Cache::put('user_is_active_'.$user->id, true, 5);
                 Auth::user()->active_at = Carbon::now();
                 $user->timestamps = false;

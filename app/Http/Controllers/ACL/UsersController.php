@@ -11,11 +11,8 @@ use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
-
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -26,17 +23,16 @@ class UsersController extends Controller
     {
         $results = User::query();
         if ($request->has('q')) {
-            $results->orWhere('name', 'LIKE', '%' . $request->input('q') . '%');
-            $results->orWhere('steamid', 'LIKE', '%' . $request->input('q') . '%');
-            $results->orWhere('guid', 'LIKE', '%' . $request->input('q') . '%');
+            $results->orWhere('name', 'LIKE', '%'.$request->input('q').'%');
+            $results->orWhere('steamid', 'LIKE', '%'.$request->input('q').'%');
+            $results->orWhere('guid', 'LIKE', '%'.$request->input('q').'%');
             $results->orWhereHas('names', function ($query) use ($request) {
-                $query->where('name', 'LIKE', '%' . $request->input('q') . '%');
+                $query->where('name', 'LIKE', '%'.$request->input('q').'%');
             });
         }
 
-
         if ($request->has('individual-perms')) {
-            if ($request->input('individual-perms') == 1) {
+            if (1 == $request->input('individual-perms')) {
                 $results->has('permissions', '>', 0);
             } else {
                 $results->has('permissions', '=', 0);
@@ -44,7 +40,7 @@ class UsersController extends Controller
         }
 
         if ($request->has('has-groups')) {
-            if ($request->input('has-groups') == 1) {
+            if (1 == $request->input('has-groups')) {
                 $results->has('roles', '>', 0);
             } else {
                 $results->has('roles', '=', 0);
@@ -59,6 +55,7 @@ class UsersController extends Controller
 
         $results = $results->with(['roles', 'permissions'])->paginate(20);
         $roles = Role::has('users')->get();
+
         return view('acl.users.list')
             ->with('results', $results)
             ->with('q', $request->input('q'))
@@ -68,15 +65,16 @@ class UsersController extends Controller
     public function newUserPage()
     {
         $roles = Role::all();
+
         return view('acl.users.new')->with('roles', $roles);
     }
 
     public function newUser(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|unique:users',
+            'name'    => 'required|unique:users',
             'steamid' => 'required|unique:users',
-            'email' => 'required|email|unique:users'
+            'email'   => 'required|email|unique:users',
         ]);
 
         $user = new User();
@@ -96,12 +94,12 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
         $roles = Role::all();
         $permissions = Permission::all();
+
         return view('acl.users.edit')->with('user', $user)->with('permissions', $permissions)->with('roles', $roles);
     }
 
     public function editUser(Request $request, $id)
     {
-
         $user = User::findOrFail($id);
         // Si no es admin, comprobamos que vengan los datos pertinentes
 //        if(!$user->isAdmin()) {

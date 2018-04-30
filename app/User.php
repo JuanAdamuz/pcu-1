@@ -3,8 +3,8 @@
 namespace App;
 
 use Carbon\Carbon;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Laratrust\Traits\LaratrustUserTrait;
@@ -39,7 +39,7 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
     ];
 
     protected $appends = [
-        'username'
+        'username',
     ];
 
     /**
@@ -49,7 +49,7 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
      */
     protected $fillable = [
         'name', 'email', 'password',
-        'whitelist_at'
+        'whitelist_at',
     ];
 
     /**
@@ -60,7 +60,7 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
     protected $hidden = [
         'password', 'remember_token', 'email', 'email_verified', 'email_verified_token', 'email_verified_at',
         'birth_date', 'country', 'rules_seen_at', 'ipb_token', 'ipb_refresh', 'disabled',
-        'disabled_reason', 'email_enabled', 'disabled_at'
+        'disabled_reason', 'email_enabled', 'disabled_at',
     ];
 
     /**
@@ -71,7 +71,6 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
     protected $auditExclude = [
         'remember_token',
     ];
-
 
     public function exams()
     {
@@ -93,13 +92,15 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
         return $this->hasMany(\App\Name::class);
     }
 
-    public function player() {
+    public function player()
+    {
         return $this->belongsTo(\App\Arma\Player::class, 'steamid', 'pid');
     }
 
     /**
      * Obtener la GUID del usuario
-     * https://gist.github.com/Fank/11127158
+     * https://gist.github.com/Fank/11127158.
+     *
      * @return string
      */
     public function getGuidAttribute($value)
@@ -107,11 +108,11 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
         if (is_null($value)) {
             $steamID = $this->steamid;
             $temp = '';
-            for ($i = 0; $i < 8; $i++) {
+            for ($i = 0; $i < 8; ++$i) {
                 $temp .= chr($steamID & 0xFF);
                 $steamID >>= 8;
             }
-            $guid = md5('BE' . $temp);
+            $guid = md5('BE'.$temp);
             $this->attributes['guid'] = $guid;
             $this->timestamps = false;
             $this->save();
@@ -135,35 +136,38 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
 
     public function getUsernameAttribute()
     {
-        return Cache::remember('users.' . $this->id . '.attributes.username', 15, function () {
-            if (!is_null($this->name)) {
+        return Cache::remember('users.'.$this->id.'.attributes.username', 15, function () {
+            if (! is_null($this->name)) {
                 return $this->name;
             }
             if ($this->names()->active()->count() > 0) {
                 return $this->names()->active()->first()->name;
             }
+
             return $this->steamid;
         });
     }
 
     public function getTimezoneAttribute($value)
     {
-        return Cache::remember('user.' . $this->id . '.attributes.timezone', 15, function () use ($value) {
+        return Cache::remember('user.'.$this->id.'.attributes.timezone', 15, function () use ($value) {
             if (is_null($value)) {
                 return config('app.timezone');
             }
+
             return $this->attributes['timezone'];
         });
     }
 
     public function getActiveName()
     {
-        if (!is_null($this->name)) {
+        if (! is_null($this->name)) {
             return $this->name;
         }
         if ($this->names()->active()->count() > 0) {
             return $this->names()->active()->first()->name;
         }
+
         return null;
     }
 
@@ -200,13 +204,12 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
 //            return false;
 //        }
 //        return true;
-        return $this->getSetupStep() == 9999;
+        return 9999 == $this->getSetupStep();
     }
 
     public function getSetupStep()
     {
-
-        return Cache::remember('user.'. $this->id . '.getSetupStep', 15, function () {
+        return Cache::remember('user.'.$this->id.'.getSetupStep', 15, function () {
             // 0 comprobar juego
             if (! $this->has_game) {
                 return 0;
@@ -219,30 +222,30 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
             if (is_null($this->email_enabled)) {
                 return 2;
             } else {
-                if ($this->email_enabled && !$this->email_verified) {
+                if ($this->email_enabled && ! $this->email_verified) {
                     return 2;
                 }
             }
             // 3 name
-            if ($this->names()->active()->count() == 0 && $this->names()->where('needs_review', true)->count() == 0) {
+            if (0 == $this->names()->active()->count() && 0 == $this->names()->where('needs_review', true)->count()) {
                 return 3;
             }
             // 4 rules
-            if (!$this->imported_exam_exempt && (is_null($this->rules_seen_at) || $this->rules_seen_at->addMinutes(30) >= Carbon::now())) {
+            if (! $this->imported_exam_exempt && (is_null($this->rules_seen_at) || $this->rules_seen_at->addMinutes(30) >= Carbon::now())) {
                 return 4;
             }
             // 5 exam
-            if (!$this->imported_exam_exempt && $this->exams()->where('passed', true)->where(function ($query) {
-                    return $query->whereNull('interview_passed')->orWhere('interview_passed', true);
-            })->count() == 0) {
+            if (! $this->imported_exam_exempt && 0 == $this->exams()->where('passed', true)->where(function ($query) {
+                return $query->whereNull('interview_passed')->orWhere('interview_passed', true);
+            })->count()) {
                 return 5;
             }
             // 6 forum
-            if (!config('pcu.forum_skip') && is_null($this->ipb_id)) {
+            if (! config('pcu.forum_skip') && is_null($this->ipb_id)) {
                 return 6;
             }
             // 7 interview
-            if (!$this->imported_exam_exempt && $this->exams()->where('passed', true)->where('interview_passed', true)->count() == 0) {
+            if (! $this->imported_exam_exempt && 0 == $this->exams()->where('passed', true)->where('interview_passed', true)->count()) {
                 return 7;
             }
 
@@ -272,95 +275,96 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
 
     /**
      * Calcula el DNI completo con letra de control
-     * https://archive.is/EIw9H
+     * https://archive.is/EIw9H.
+     *
      * @return bool|string
      */
     public function getDniAttribute()
     {
         $numbers = substr($this->steamid, -8);
         $resto = round($numbers % 23);
-        $letter = "?";
+        $letter = '?';
         switch ($resto) {
             case 0:
-                $letter = "T";
+                $letter = 'T';
                 break;
             case 1:
-                $letter = "R";
+                $letter = 'R';
                 break;
             case 2:
-                $letter = "W";
+                $letter = 'W';
                 break;
             case 3:
-                $letter = "A";
+                $letter = 'A';
                 break;
             case 4:
-                $letter = "G";
+                $letter = 'G';
                 break;
             case 5:
-                $letter = "M";
+                $letter = 'M';
                 break;
             case 6:
-                $letter = "Y";
+                $letter = 'Y';
                 break;
             case 7:
-                $letter = "F";
+                $letter = 'F';
                 break;
             case 8:
-                $letter = "P";
+                $letter = 'P';
                 break;
             case 9:
-                $letter = "D";
+                $letter = 'D';
                 break;
             case 10:
-                $letter = "X";
+                $letter = 'X';
                 break;
             case 11:
-                $letter = "B";
+                $letter = 'B';
                 break;
             case 12:
-                $letter = "N";
+                $letter = 'N';
                 break;
             case 13:
-                $letter = "J";
+                $letter = 'J';
                 break;
             case 14:
-                $letter = "Z";
+                $letter = 'Z';
                 break;
             case 15:
-                $letter = "S";
+                $letter = 'S';
                 break;
             case 16:
-                $letter = "Q";
+                $letter = 'Q';
                 break;
             case 17:
-                $letter = "V";
+                $letter = 'V';
                 break;
             case 18:
-                $letter = "H";
+                $letter = 'H';
                 break;
             case 19:
-                $letter = "L";
+                $letter = 'L';
                 break;
             case 20:
-                $letter = "C";
+                $letter = 'C';
                 break;
             case 21:
-                $letter = "K";
+                $letter = 'K';
                 break;
             default:
-                $letter = "Ñ";
+                $letter = 'Ñ';
         }
-        return $numbers . $letter;
-    }
 
+        return $numbers.$letter;
+    }
 
     public function hasExamCooldown($date = false)
     {
         $exams = $this->exams();
-        if ($exams->count() == 0) {
+        if (0 == $exams->count()) {
             return false;
         }
-        if ($exams->where('passed', 0)->count() == 1) {
+        if (1 == $exams->where('passed', 0)->count()) {
             $exam = $exams->where('passed', 0)->latest('passed_at')->first();
             $date = $exam->passed_at->addDays(1);
             if ($date > Carbon::now()) {
@@ -370,9 +374,10 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
                     return true;
                 }
             }
+
             return false;
         }
-        if ($exams->where('passed', 0)->count() == 2) {
+        if (2 == $exams->where('passed', 0)->count()) {
             $exam = $exams->where('passed', 0)->latest('passed_at')->first();
             $date = $exam->passed_at->addDays(2);
             if ($date > Carbon::now()) {
@@ -382,6 +387,7 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
                     return true;
                 }
             }
+
             return false;
         }
         if ($exams->where('passed', 0)->count() >= 3) {
@@ -394,8 +400,10 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
                     return true;
                 }
             }
+
             return false;
         }
+
         return false;
     }
 
@@ -405,6 +413,7 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
         if ((3 - ($count)) <= 0) {
             return 0;
         }
+
         return 3 - $count;
     }
 
@@ -432,8 +441,10 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
             if ($model) {
                 return $this->interviewing()->whereNull('passed')->latest()->first();
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -449,11 +460,13 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
         if (is_null($this->email_disabled_at)) {
             return true;
         }
+
         return $this->email_disabled_at->addMinutes(15) <= Carbon::now();
     }
 
     /**
      * Determina si un usuario debería estar viendo las normas.
+     *
      * @return bool puede el usuario o no ver las normas
      */
     public function canSeeRules()
@@ -465,16 +478,16 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
         $step = $this->getSetupStep();
 
         // Si está en el paso de las normas
-        if ($step == 4) {
+        if (4 == $step) {
             return true;
         }
         // Si está en el paso de examen pero no ha empezado
-        if ($step == 5) {
+        if (5 == $step) {
             return is_null($this->getOngoingExam());
         }
         // Si le están entrevistando
-        if ($step == 7) {
-            return !$this->hasInterviewOngoing();
+        if (7 == $step) {
+            return ! $this->hasInterviewOngoing();
         }
         // Todo lo demás, no.
         return false;

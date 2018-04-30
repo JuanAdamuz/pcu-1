@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Mod;
 
 use App\Exam;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ExamController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware(['auth', 'setup_required']);
@@ -31,6 +30,7 @@ class ExamController extends Controller
         $results->orderBy('updated_at', 'desc');
         $results->with('user');
         $results = $results->paginate(15);
+
         return view('mod.exams.index')->with('results', $results);
     }
 
@@ -47,7 +47,8 @@ class ExamController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -58,24 +59,26 @@ class ExamController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Exam  $exam
+     * @param \App\Exam $exam
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(Exam $exam)
     {
-
         if (! Auth::user()->hasPermission(['mod-search'])) {
             abort(403);
         }
 
         $exam->load('answers', 'user');
+
         return view('mod.exams.show')->with('exam', $exam);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Exam  $exam
+     * @param \App\Exam $exam
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(Exam $exam)
@@ -86,8 +89,9 @@ class ExamController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Exam  $exam
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Exam                $exam
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Exam $exam)
@@ -98,7 +102,8 @@ class ExamController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Exam  $exam
+     * @param \App\Exam $exam
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(Exam $exam)

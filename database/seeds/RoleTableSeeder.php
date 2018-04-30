@@ -6,15 +6,13 @@ class RoleTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run()
     {
         $role = new \App\Role();
-        $role->name = "debug";
-        $role->display_name = "Debug";
-        $role->description = "Grupo de ejemplo con todos los permisos";
+        $role->name = 'debug';
+        $role->display_name = 'Debug';
+        $role->description = 'Grupo de ejemplo con todos los permisos';
         $role->save();
 
         $role->syncPermissions(\App\Permission::all());

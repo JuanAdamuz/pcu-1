@@ -18,11 +18,12 @@ class Player extends Model
      *
      * @var string
      */
-    protected $primaryKey = "uid";
+    protected $primaryKey = 'uid';
 
     /**
      * Desactivar los timestamps porque el pop no tiene esa columna.
      * Para llevar la cuenta usaré revisionable.
+     *
      * @var bool
      */
     public $timestamps = false;

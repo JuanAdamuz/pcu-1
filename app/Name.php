@@ -12,8 +12,6 @@ class Name extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
     /**
      * The "booting" method of the model.
-     *
-     * @return void
      */
     protected static function boot()
     {
@@ -27,7 +25,7 @@ class Name extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
         $query->skip($skip)->take(1);
     }
-    
+
     public function reviews()
     {
         return $this->morphMany(\App\Review::class, 'reviewable');
@@ -40,7 +38,7 @@ class Name extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
     protected $dates = [
         'active_at',
-        'end_at'
+        'end_at',
     ];
 
     public function scopeActive($query)
@@ -57,7 +55,7 @@ class Name extends Model implements \OwenIt\Auditing\Contracts\Auditable
         $query->where('needs_review', true)
             ->has('reviews', '<', 3);
 
-        if (Auth::check() && !$total) {
+        if (Auth::check() && ! $total) {
             $query->whereDoesntHave('reviews', function ($query) use ($total) {
                 $query->where('user_id', Auth::user()->id);
             });
@@ -66,6 +64,7 @@ class Name extends Model implements \OwenIt\Auditing\Contracts\Auditable
                 $query->where('user_id', 0);
             });
         }
+
         return $query;
     }
 }

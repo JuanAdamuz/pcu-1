@@ -8,6 +8,4 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Server extends Model
 {
     use SoftDeletes;
-
-    //
 }

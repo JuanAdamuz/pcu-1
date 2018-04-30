@@ -19,107 +19,113 @@ class Player extends Model
      *
      * @var string
      */
-    protected $primaryKey = "pid";
+    protected $primaryKey = 'pid';
 
     /**
      * Desactivar los timestamps porque el pop no tiene esa columna.
      * Para llevar la cuenta usaré revisionable.
+     *
      * @var bool
      */
     public $timestamps = false;
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class, 'pid', 'steamid');
     }
 
-    public function vehicles() {
+    public function vehicles()
+    {
         return $this->hasMany(Vehicle::class, 'pid', 'pid');
     }
 
-    public function transactions() {
+    public function transactions()
+    {
         return $this->hasMany(Transaction::class, 'id_cliente', 'pid');
     }
 
     /**
      * Calcula el DNI completo con letra de control
-     * https://archive.is/EIw9H
+     * https://archive.is/EIw9H.
+     *
      * @return bool|string
      */
     public function getDniAttribute()
     {
         $numbers = substr($this->pid, -8);
         $resto = round($numbers % 23);
-        $letter = "?";
+        $letter = '?';
         switch ($resto) {
             case 0:
-                $letter = "T";
+                $letter = 'T';
                 break;
             case 1:
-                $letter = "R";
+                $letter = 'R';
                 break;
             case 2:
-                $letter = "W";
+                $letter = 'W';
                 break;
             case 3:
-                $letter = "A";
+                $letter = 'A';
                 break;
             case 4:
-                $letter = "G";
+                $letter = 'G';
                 break;
             case 5:
-                $letter = "M";
+                $letter = 'M';
                 break;
             case 6:
-                $letter = "Y";
+                $letter = 'Y';
                 break;
             case 7:
-                $letter = "F";
+                $letter = 'F';
                 break;
             case 8:
-                $letter = "P";
+                $letter = 'P';
                 break;
             case 9:
-                $letter = "D";
+                $letter = 'D';
                 break;
             case 10:
-                $letter = "X";
+                $letter = 'X';
                 break;
             case 11:
-                $letter = "B";
+                $letter = 'B';
                 break;
             case 12:
-                $letter = "N";
+                $letter = 'N';
                 break;
             case 13:
-                $letter = "J";
+                $letter = 'J';
                 break;
             case 14:
-                $letter = "Z";
+                $letter = 'Z';
                 break;
             case 15:
-                $letter = "S";
+                $letter = 'S';
                 break;
             case 16:
-                $letter = "Q";
+                $letter = 'Q';
                 break;
             case 17:
-                $letter = "V";
+                $letter = 'V';
                 break;
             case 18:
-                $letter = "H";
+                $letter = 'H';
                 break;
             case 19:
-                $letter = "L";
+                $letter = 'L';
                 break;
             case 20:
-                $letter = "C";
+                $letter = 'C';
                 break;
             case 21:
-                $letter = "K";
+                $letter = 'K';
                 break;
             default:
-                $letter = "Ñ";
+                $letter = 'Ñ';
         }
-        return $numbers . $letter;
+
+        return $numbers.$letter;
     }
 }

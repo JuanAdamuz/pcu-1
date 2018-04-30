@@ -4,9 +4,9 @@ namespace App\Notifications;
 
 use App\Exam;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ExamExpired extends Notification implements ShouldQueue
 {
@@ -16,8 +16,6 @@ class ExamExpired extends Notification implements ShouldQueue
 
     /**
      * Create a new notification instance.
-     *
-     * @return void
      */
     public function __construct(Exam $exam)
     {
@@ -27,7 +25,8 @@ class ExamExpired extends Notification implements ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
@@ -43,14 +42,15 @@ class ExamExpired extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         $url = route('setup-exam');
 
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject('Tu aprobado ha expirado')
             ->error()
             ->greeting('Hacía tiempo que no te veíamos.')
@@ -63,17 +63,18 @@ class ExamExpired extends Notification implements ShouldQueue
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            'icon' => 'alarm',
-            'title' => 'Tu aprobado ha expirado',
-            'message' => 'Como tu aprobado ha expirado, tendrás que volver a realizar la prueba escrita. No te desanimes, si ya la pasaste una vez no te costará mucho ahora.',
-            'url' => route('setup-exam'),
-            'button_text' => 'Volver a intentar'
+            'icon'        => 'alarm',
+            'title'       => 'Tu aprobado ha expirado',
+            'message'     => 'Como tu aprobado ha expirado, tendrás que volver a realizar la prueba escrita. No te desanimes, si ya la pasaste una vez no te costará mucho ahora.',
+            'url'         => route('setup-exam'),
+            'button_text' => 'Volver a intentar',
         ];
     }
 }

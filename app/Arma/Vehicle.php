@@ -17,6 +17,7 @@ class Vehicle extends Model
     /**
      * Desactivar los timestamps porque el pop no tiene esa columna.
      * Para llevar la cuenta usaré revisionable.
+     *
      * @var bool
      */
     public $timestamps = false;
@@ -24,72 +25,83 @@ class Vehicle extends Model
     protected $dates = [
     ];
 
-    public function player() {
+    public function player()
+    {
         return $this->belongsTo(Player::class, 'pid', 'pid');
     }
 
-    public function scopeCivilian($query) {
+    public function scopeCivilian($query)
+    {
         return $query->where('side', 'civ');
     }
 
-    public function scopeMed($query) {
+    public function scopeMed($query)
+    {
         return $query->where('side', 'med');
     }
 
-    public function scopeCop($query) {
+    public function scopeCop($query)
+    {
         return $query->where('side', 'cop');
     }
 
-    public function scopeCar($query) {
+    public function scopeCar($query)
+    {
         return $query->where('type', 'Car');
     }
 
-    public function scopeAir($query) {
+    public function scopeAir($query)
+    {
         return $query->where('type', 'Air');
     }
 
-    public function scopeShip($query) {
+    public function scopeShip($query)
+    {
         return $query->where('type', 'Ship');
     }
 
-    public function getNameAttribute() {
-        if(key_exists($this->classname, config('pop.vehicles'))) {
+    public function getNameAttribute()
+    {
+        if (key_exists($this->classname, config('pop.vehicles'))) {
             return config('pop.vehicles')[$this->classname]['name'];
         }
+
         return $this->classname;
     }
 
-    public function getPriceAttribute() {
-        if(key_exists($this->classname, config('pop.vehicles'))) {
+    public function getPriceAttribute()
+    {
+        if (key_exists($this->classname, config('pop.vehicles'))) {
             return config('pop.vehicles')[$this->classname]['price'];
         }
+
         return null;
     }
 
-    public function isTransferable() {
-
+    public function isTransferable()
+    {
         // No permitir aeronaves, embarcaciones ni vehículos de EMS/Policía
-        if($this->type != 'Car' || $this->side != 'civ') {
+        if ('Car' != $this->type || 'civ' != $this->side) {
             return false;
         }
 
         // Mínimo tiempo de matriculación para transferir una semana
-        if($this->insert_time > Carbon::now()->subWeek()) {
+        if ($this->insert_time > Carbon::now()->subWeek()) {
             return false;
         }
 
         // El dueño debe tener dos semanas jugadas
-        if($this->player->insert_time > Carbon::now()->subWeeks(2)) {
+        if ($this->player->insert_time > Carbon::now()->subWeeks(2)) {
             return false;
         }
 
         // Si el vehículo ha explotado (siniestrado) no dejamos
-        if(!$this->alive) {
+        if (! $this->alive) {
             return false;
         }
 
         // Si no está en la lista, no dejamos transferirlo
-        if(!key_exists($this->classname, config('pop.vehicles'))) {
+        if (! key_exists($this->classname, config('pop.vehicles'))) {
             return false;
         }
 

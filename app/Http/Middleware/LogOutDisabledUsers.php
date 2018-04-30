@@ -9,8 +9,9 @@ class LogOutDisabledUsers
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     *
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -19,15 +20,17 @@ class LogOutDisabledUsers
             $user = $request->user();
             if ($user->isDisabled()) {
                 \Auth::logout();
-                if ($user->disabled_reason == '@pegui') {
+                if ('@pegui' == $user->disabled_reason) {
                     return redirect(route('pegui'));
                 }
                 if (key_exists($user->disabled_reason, config('pcu.disabled_reasons'))) {
                     return redirect('/')->with('status', config('pcu.disabled_reasons')[$user->disabled_reason]);
                 }
+
                 return redirect('/')->with('status', $user->disabled_reason);
             }
         }
+
         return $next($request);
     }
 }

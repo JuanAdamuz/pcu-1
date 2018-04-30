@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Writedown Parser
@@ -64,13 +63,12 @@ return [
     */
 
     'parsers' => [
-
         'parsedown' => [
             'driver' => 'parsedown',
             'config' => [
                 'breaks_enabled' => null,
                 'markup_escaped' => null,
-                'urls_linked' => null,
+                'urls_linked'    => null,
             ],
         ],
 
@@ -79,53 +77,53 @@ return [
             'config' => [
                 'breaks_enabled' => null,
                 'markup_escaped' => null,
-                'urls_linked' => null,
+                'urls_linked'    => null,
             ],
         ],
 
         'markdown' => [
             'driver' => 'markdown',
             'config' => [
-                'empty_element_suffix' => ' />',
-                'tab_width' => 4,
-                'no_markup  ' => false,
-                'no_entities' => false,
-                'hard_wrap' => false,
-                'predef_urls  ' => [],
-                'predef_titles' => [],
-                'url_filter_func' => null,
-                'header_id_func' => null,
+                'empty_element_suffix'    => ' />',
+                'tab_width'               => 4,
+                'no_markup  '             => false,
+                'no_entities'             => false,
+                'hard_wrap'               => false,
+                'predef_urls  '           => [],
+                'predef_titles'           => [],
+                'url_filter_func'         => null,
+                'header_id_func'          => null,
                 'code_block_content_func' => null,
-                'code_span_content_func' => null,
-                'enhanced_ordered_list' => false,
+                'code_span_content_func'  => null,
+                'enhanced_ordered_list'   => false,
             ],
         ],
 
         'markdownextra' => [
             'driver' => 'markdownextra',
             'config' => [
-                'empty_element_suffix' => ' />',
-                'tab_width' => 4,
-                'no_markup  ' => false,
-                'no_entities' => false,
-                'hard_wrap' => false,
-                'predef_urls  ' => [],
-                'predef_titles' => [],
-                'url_filter_func' => null,
-                'header_id_func' => null,
+                'empty_element_suffix'    => ' />',
+                'tab_width'               => 4,
+                'no_markup  '             => false,
+                'no_entities'             => false,
+                'hard_wrap'               => false,
+                'predef_urls  '           => [],
+                'predef_titles'           => [],
+                'url_filter_func'         => null,
+                'header_id_func'          => null,
                 'code_block_content_func' => null,
-                'code_span_content_func' => null,
-                'enhanced_ordered_list' => false,
-                'fn_id_prefix' => '',
-                'fn_link_title' => '',
-                'fn_backlink_title' => '',
-                'fn_link_class' => 'footnote-ref',
-                'fn_backlink_class' => 'footnote-backref',
-                'fn_backlink_html' => '&#8617,&#xFE0E,',
-                'table_align_class_tmpl' => '',
-                'code_class_prefix' => '',
-                'code_attr_on_pre' => false,
-                'predef_abbr' => [],
+                'code_span_content_func'  => null,
+                'enhanced_ordered_list'   => false,
+                'fn_id_prefix'            => '',
+                'fn_link_title'           => '',
+                'fn_backlink_title'       => '',
+                'fn_link_class'           => 'footnote-ref',
+                'fn_backlink_class'       => 'footnote-backref',
+                'fn_backlink_html'        => '&#8617,&#xFE0E,',
+                'table_align_class_tmpl'  => '',
+                'code_class_prefix'       => '',
+                'code_attr_on_pre'        => false,
+                'predef_abbr'             => [],
             ],
         ],
 
@@ -135,17 +133,16 @@ return [
                 'renderer' => [
                     'block_separator' => "\n",
                     'inner_separator' => "\n",
-                    'soft_break' => "\n",
+                    'soft_break'      => "\n",
                 ],
-                'enable_emphasis' => true,
-                'enable_strong' => true,
-                'use_asterisk' => true,
-                'use_underscore' => true,
-                'html_input' => 'escape',
+                'enable_emphasis'    => true,
+                'enable_strong'      => true,
+                'use_asterisk'       => true,
+                'use_underscore'     => true,
+                'html_input'         => 'escape',
                 'allow_unsafe_links' => false,
             ],
             'extensions' => [
-                //
             ],
         ],
     ],

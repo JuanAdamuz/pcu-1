@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use OwenIt\Auditing\Audit;
 
 class PruneAudits extends Command
 {
@@ -24,8 +23,6 @@ class PruneAudits extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
