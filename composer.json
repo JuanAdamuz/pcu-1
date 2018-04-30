@@ -16,7 +16,7 @@
         "fideloper/proxy": "~3.3",
         "grimthorr/laravel-user-settings": "^2.1",
         "haleks/writedown": "^2.0",
-        "invisnik/laravel-steam-auth": "2.*",
+        "invisnik/laravel-steam-auth": "3.*",
         "jackiedo/timezonelist": "5.*",
         "jenssegers/agent": "^2.5",
         "laravel/framework": "5.5.*",
