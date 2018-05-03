@@ -5,40 +5,40 @@
 @section('content')
     @include('acl.users.menu')
     <div class="container">
-        <h5>Editar grupo "{{ $role->display_name }}"</h5>
+        <h5>@lang('acl.roles.edit.heading', ['name' => $role->display_name])</h5>
         @include('common.errors')
         <div class="card-panel">
             <form action="{{ route('acl-roles-edit', $role) }}" method="POST">
                 {{ csrf_field() }}
-                <p>Información</p>
+                <p>@lang('acl.roles.edit.form.info.heading')</p>
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="name" name="name" type="text" required value="{{ !is_null(old('name')) ? old('name') : $role->name }}">
-                        <label for="name">Identificador</label>
+                        <label for="name">@lang('acl.roles.edit.form.info.id')</label>
                     </div>
                     <div class="col s6">
-                        <span>Una palabra corta y solo con letras. Identifica el grupo.</span>
+                        <span>@lang('acl.roles.edit.form.info.id.description')</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="display_name" name="display_name" type="text" required value="{{ !is_null(old('display_name')) ? old('display_name') : $role->display_name }}">
-                        <label for="display_name">Nombre a mostrar</label>
+                        <label for="display_name">@lang('acl.roles.edit.form.info.displayname')</label>
                     </div>
                     <div class="col s6">
-                        <span>El nombre que se mostrará a los usuarios.</span>
+                        <span>@lang('acl.roles.edit.form.info.displayname.description')</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="description" name="description" type="text" required value="{{ !is_null(old('description')) ? old('description') : $role->description }}">
-                        <label for="description">Descripción</label>
+                        <label for="description">@lang('acl.roles.edit.form.info.description')</label>
                     </div>
                     <div class="col s6">
-                        <span>Describe el grupo y su función de forma corta y concisa.</span>
+                        <span>@lang('acl.roles.edit.form.info.description.description')</span>
                     </div>
                 </div>
-                <p>Permisos</p>
+                <p>@lang('acl.roles.edit.form.permissions.heading')</p>
                 <div class="row">
                     <div class="col s12">
                         <select id="select-permissions" multiple style="width: 100%" name="permissions[]" id="permissions" class="select2">
@@ -55,19 +55,19 @@
                     </div>
                 </div>
                 <br>
-                <button class="btn green waves-effect" type="submit">Editar grupo</button>
+                <button class="btn green waves-effect" type="submit">@lang('acl.roles.edit.form.submit')</button>
             </form>
             <br>
-            <p class="red-text">Mucho ojo:</p>
-            <form onsubmit="return confirm('¿Vaciar y borrar grupo? No se puede deshacer')" action="{{ route('acl-roles-delete', $role) }}" method="POST">
+            <p class="red-text">@lang('acl.roles.edit.danger.heading')</p>
+            <form onsubmit="return confirm('@lang('acl.roles.edit.danger.delete.confirm')')" action="{{ route('acl-roles-delete', $role) }}" method="POST">
                 {{ csrf_field() }}
-                <button class="btn red waves-effect" type="submit"><i class="material-icons left">delete_sweep</i> Quitar a todos del grupo y eliminar</button>
+                <button class="btn red waves-effect" type="submit"><i class="material-icons left">delete_sweep</i> @lang('acl.roles.edit.danger.delete.button')</button>
             </form>
         </div>
         <div class="card-panel">
-            <b>Usuarios</b>
+            <b>@lang('acl.roles.edit.users.heading')</b>
             @if($role->users()->count() == 0)
-                <p>Ningún usuario en el grupo.</p>
+                <p>@lang('acl.roles.edit.users.empty')</p>
             @else
                 <ul>
                     @foreach($role->users as $user)

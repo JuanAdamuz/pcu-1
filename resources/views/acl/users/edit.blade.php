@@ -9,38 +9,38 @@
         @include('common.errors')
         <div class="row">
             <div class="col s12 m6">
-                <p>Datos y permisos</p>
+                <p>@lang('acl.users.edit.data.heading')</p>
                 <div class="card-panel">
                     <form action="{{ route('acl-users-edit', $user) }}" method="POST">
                         {{ csrf_field() }}
                         <div class="row">
                             <div class="input-field col s12">
                                 <input disabled type="text" required value="{{ $user->username }}">
-                                <label for="steamid">Identificador</label>
+                                <label for="steamid">@lang('acl.users.edit.data.id')</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <input disabled type="text" required value="{{ $user->steamid }}">
-                                <label for="steamid">SteamID</label>
+                                <label for="steamid">@lang('acl.users.edit.data.steamid')</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <input type="email" disabled required value="{{ $user->email or "?" }}">
-                                <label for="email">Correo electrónico</label>
+                                <label for="email">@lang('acl.users.edit.data.email')</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <input @if($user->isAdmin()) disabled @endif type="checkbox" name="disabled" aria-invalid="disabled" class="filled-in" id="filled-in-box" @if(!is_null(old('anonymous'))) checked="checked" @elseif($user->disabled) checked @endif/>
-                                <label for="filled-in-box">Cuenta desactivada</label>
+                                <label for="filled-in-box">@lang('acl.users.edit.data.disabled')</label>
                             </div>
                         </div>
                         <br>
                         @if($user->isAdmin()) <small>Nota: la información de los Administradores del Panel no puede ser editada, aunque sí los grupos y permisos.</small> @endif
                         <br>
-                        <p>Grupos</p>
+                        <p>@lang('acl.users.edit.groups.heading')</p>
                         <div class="row">
                             <div class="col s12">
                                 <select id="select-roles" multiple style="width: 100%" name="roles[]" id="roles" class="select2">
@@ -56,7 +56,7 @@
                                 </select>
                             </div>
                         </div>
-                        <p>Permisos individuales del usuario</p>
+                        <p>@lang('acl.users.edit.permissions.heading')</p>
                         <div class="row">
                             <div class="col s12">
                                 <select id="select-permissions" multiple style="width: 100%" name="permissions[]" id="permissions" class="select2">
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                         <br>
-                        <button class="btn green waves-effect" type="submit">Editar usuario</button>
+                        <button class="btn green waves-effect" type="submit">@lang('acl.users.edit.submit')</button>
                     </form>
                 </div>
             </div>

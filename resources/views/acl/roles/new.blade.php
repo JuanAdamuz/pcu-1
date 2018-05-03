@@ -1,44 +1,44 @@
 @extends('layouts.pcu')
 
-@section('title', 'Nuevo grupo')
+@section('title', __('acl.roles.add.title'))
 
 @section('content')
     @include('acl.users.menu')
     <div class="container">
-        <h5>Crear grupo</h5>
+        <h5>@lang('acl.roles.add.heading')</h5>
         @include('common.errors')
         <div class="card-panel">
             <form action="{{ route('acl-roles-new') }}" method="POST">
                 {{ csrf_field() }}
-                <p>Información</p>
+                <p>@lang('acl.roles.add.form.info.heading')</p>
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="name" name="name" type="text" required value="{{ old('name') }}">
-                        <label for="name">Identificador <span class="red-text">*</span></label>
+                        <label for="name">@lang('acl.roles.add.form.info.id') <span class="red-text">*</span></label>
                     </div>
                     <div class="col s6">
-                        <span>Una palabra corta y solo con letras. Identifica el grupo.</span>
+                        <span>@lang('acl.roles.add.form.info.id.description')</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="display_name" name="display_name" type="text" required value="{{ old('display_name') }}">
-                        <label for="display_name">Nombre a mostrar <span class="red-text">*</span></label>
+                        <label for="display_name">@lang('acl.roles.add.form.info.displayname') <span class="red-text">*</span></label>
                     </div>
                     <div class="col s6">
-                        <span>El nombre que se mostrará a los usuarios.</span>
+                        <span>@lang('acl.roles.add.form.info.displayname.description')</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="description" name="description" type="text" required value="{{ old('description') }}">
-                        <label for="description">Descripción <span class="red-text">*</span></label>
+                        <label for="description">@lang('acl.roles.add.form.info.description') <span class="red-text">*</span></label>
                     </div>
                     <div class="col s6">
-                        <span>Describe el grupo y su función de forma corta y concisa.</span>
+                        <span>@lang('acl.roles.add.form.info.description.description')</span>
                     </div>
                 </div>
-                <p>Permisos</p>
+                <p>@lang('acl.roles.add.form.permissions.heading')</p>
                 <div class="row">
                     <div class="col s12">
 
@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <br>
-                <button class="btn green waves-effect" type="submit">Crear grupo</button>
+                <button class="btn green waves-effect" type="submit">@lang('acl.roles.add.form.submit')</button>
             </form>
         </div>
     </div>
