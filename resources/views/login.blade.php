@@ -55,7 +55,9 @@
         @else
             <br>
         @endif
-        <small class="white-text">Solo usuarios ya registrados:</small>
+        @if(!config('pcu.registrations_enabled'))
+            <small class="white-text">Solo usuarios ya registrados:</small>
+        @endif
         <br>
         <a @if(session('status')) disabled @endif href="{{ route('login') }}" class="btn green waves-effect"><i class="mdi mdi-steam left"></i> Iniciar sesión con Steam</a>
         <br>
